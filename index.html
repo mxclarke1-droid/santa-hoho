@@ -4,1633 +4,1702 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Santa Tracker 3D</title>
+<title>Santa Tracker</title>
 
 <style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    overflow:hidden;
-    background:#020711;
-    color:white;
-    font-family:Arial,sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-#earth{
-    position:fixed;
-    inset:0;
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #020611;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
-header{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:70px;
-    z-index:30;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 24px;
-    background:rgba(2,10,20,.95);
-    border-bottom:2px solid #00bfff;
+#topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  z-index: 20;
+  background: rgba(2,7,18,.94);
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
 }
 
-.logo{
-    font-size:23px;
-    font-weight:bold;
+.logo {
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.live{
-    color:#55ff88;
-    font-weight:bold;
+.status {
+  color: #5cff9d;
+  font-weight: bold;
 }
 
-.panel{
-    position:fixed;
-    top:88px;
-    left:18px;
-    width:320px;
-    z-index:20;
-    padding:18px;
-    border:1px solid #00bfff;
-    border-radius:12px;
-    background:rgba(2,15,28,.93);
-    box-shadow:0 0 25px rgba(0,180,255,.25);
+#scene {
+  position: fixed;
+  inset: 68px 0 0 0;
 }
 
-.panel h2{
-    margin-top:0;
-    color:#58dcff;
+#info {
+  position: fixed;
+  left: 18px;
+  top: 88px;
+  width: 285px;
+  z-index: 10;
 }
 
-.green{
-    color:#55ff88;
-    font-weight:bold;
+.panel {
+  background: rgba(4,10,24,.91);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
 }
 
-.blue{
-    color:#5ddcff;
-    font-weight:bold;
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
 }
 
-.red{
-    color:#ff5555;
+.signal {
+  color: #64ff9c;
+  font-weight: bold;
 }
 
-button{
-    width:100%;
-    margin-top:10px;
-    padding:11px;
-    border:0;
-    border-radius:7px;
-    background:#c40000;
-    color:white;
-    font-size:15px;
-    font-weight:bold;
-    cursor:pointer;
+.small {
+  color: #aeb8c8;
+  font-size: 12px;
 }
 
-button:hover{
-    background:#ed2020;
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
 }
 
-.secondary{
-    background:#17445d;
+#settingsButton {
+  position: fixed;
+  right: 18px;
+  top: 88px;
+  z-index: 20;
+  background: rgba(4,10,24,.94);
+  color: white;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px;
+  padding: 11px 15px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-.secondary:hover{
-    background:#21617e;
+#settingsButton:hover {
+  background: rgba(30,45,70,.96);
 }
 
-#tracking{
-    position:fixed;
-    top:88px;
-    right:18px;
-    z-index:20;
-    width:245px;
-    padding:14px;
-    border:1px solid #ff4444;
-    border-radius:10px;
-    background:rgba(2,15,28,.93);
+#message {
+  color: #8fc7ff;
+  line-height: 1.45;
+  font-size: 13px;
 }
 
-#trackingTitle{
-    color:#ff5555;
-    font-weight:bold;
-    margin-bottom:5px;
+#loading {
+  position: fixed;
+  inset: 68px 0 0 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #020611;
+  font-size: 20px;
 }
 
-.dashboard{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    z-index:20;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-    gap:8px;
-    padding:10px;
-    background:rgba(2,12,22,.96);
-    border-top:1px solid #234b60;
+#loading.hidden {
+  display: none;
 }
 
-.card{
-    padding:9px;
-    border:1px solid #24495d;
-    border-radius:8px;
-    background:#0b2030;
+#modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,.72);
+  align-items: center;
+  justify-content: center;
 }
 
-.card-title{
-    color:#8baebe;
-    font-size:11px;
+.modalBox {
+  width: min(420px, 92vw);
+  background: #071021;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 20px 70px rgba(0,0,0,.7);
 }
 
-.card-value{
-    margin-top:4px;
-    font-size:17px;
-    font-weight:bold;
+.modalBox h2 {
+  margin-top: 0;
 }
 
-#radio{
-    margin-top:14px;
-    padding:10px;
-    border-left:3px solid #55ff88;
-    background:rgba(20,80,60,.25);
-    color:#b9ffd0;
-    font-size:12px;
-    line-height:1.5;
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0 12px;
+  border-radius: 8px;
+  border: 1px solid #46526b;
+  background: #101a2e;
+  color: white;
+  font-size: 15px;
 }
 
-#parentButton{
-    position:fixed;
-    right:18px;
-    bottom:115px;
-    width:180px;
-    z-index:25;
-    background:#263746;
+button.action {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 7px;
 }
 
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:100;
-    background:rgba(0,0,0,.78);
-    align-items:center;
-    justify-content:center;
+.primary {
+  background: #d62828;
+  color: white;
 }
 
-.modalBox{
-    width:360px;
-    max-width:90%;
-    padding:24px;
-    border:1px solid #00bfff;
-    border-radius:14px;
-    background:#071522;
-    box-shadow:0 0 35px rgba(0,190,255,.3);
+.secondary {
+  background: #24324c;
+  color: white;
 }
 
-.modalBox h2{
-    margin-top:0;
-    color:#58dcff;
+#arrival {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.82);
 }
 
-input{
-    width:100%;
-    padding:11px;
-    margin:6px 0 12px;
-    border:1px solid #34586b;
-    border-radius:6px;
-    background:#07111b;
-    color:white;
+.arrivalBox {
+  text-align: center;
+  padding: 35px;
+  width: min(600px, 92vw);
+  background: #071021;
+  border-radius: 22px;
+  border: 2px solid #e33;
 }
 
-.small{
-    color:#9bb2c0;
-    font-size:12px;
-    line-height:1.4;
+.arrivalBox h1 {
+  font-size: 38px;
+  margin: 5px;
 }
 
-#arrival{
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    z-index:80;
-    width:380px;
-    max-width:90%;
-    padding:30px;
-    text-align:center;
-    border:3px solid #70ff9a;
-    border-radius:15px;
-    background:rgba(5,100,40,.97);
-    box-shadow:0 0 40px rgba(80,255,130,.5);
-    font-size:23px;
+@media(max-width:700px) {
+  #info {
+    width: 220px;
+  }
+
+  .panel {
+    padding: 11px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-    <div class="logo">🎅 SANTA TRACKER 3D</div>
-    <div class="live">● LIVE TRACKING</div>
-</header>
+<div id="topbar">
+  <div class="logo">🎅 SANTA TRACKER</div>
+  <div class="status" id="trackingStatus">● SYSTEM READY</div>
+</div>
 
-<div id="earth"></div>
+<div id="scene"></div>
 
-<!-- MAIN INFORMATION PANEL -->
-<div class="panel">
+<div id="loading">
+  🌎 Loading 3D Santa Tracker...
+</div>
 
-    <h2>📡 SANTA SIGNAL</h2>
+<div id="info">
 
-    Status:
-    <span id="status" class="red">PARENT SETUP REQUIRED</span>
+  <div class="panel">
+    <h2>📡 Santa Radio</h2>
+    <div class="signal">● SIGNAL LOCKED</div>
+    <p id="radioMessage">Waiting for Santa transmission...</p>
+    <div class="small">FICTIONAL SANTA RADIO NETWORK</div>
+  </div>
 
-    <br><br>
-
-    Sleigh ID:
-    <b>NP-01</b>
-
-    <br><br>
-
-    Signal:
-    <span id="signal" class="blue">--%</span>
-
-    <br><br>
-
-    Current Location:
-    <br>
-    <b id="location">Awaiting launch</b>
-
-    <br><br>
-
-    Next Destination:
-    <br>
-    <b id="next">--</b>
-
-    <div id="radio">
-        📻 Radio receiver waiting for Santa transmission...
+  <div class="panel">
+    <h2>📍 Current Mission</h2>
+    <div class="stat">
+      <span>Location</span>
+      <b id="location">North Pole</b>
     </div>
+
+    <div class="stat">
+      <span>Next Stop</span>
+      <b id="nextStop">Reykjavik</b>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>🛰️ Flight Data</h2>
+
+    <div class="stat">
+      <span>Speed</span>
+      <b id="speed">0 mph</b>
+    </div>
+
+    <div class="stat">
+      <span>Altitude</span>
+      <b id="altitude">0 ft</b>
+    </div>
+
+    <div class="stat">
+      <span>Presents</span>
+      <b id="presents">0</b>
+    </div>
+
+    <div class="stat">
+      <span>Reindeer</span>
+      <b>9</b>
+    </div>
+  </div>
 
 </div>
 
-<!-- SANTA LOCK -->
-<div id="tracking">
+<button id="settingsButton">🔒 Parent Settings</button>
 
-    <div id="trackingTitle">
-        🔴 SANTA LOCK
+<div id="modal">
+  <div class="modalBox">
+
+    <h2>🔒 Parent Settings</h2>
+
+    <div id="setupArea">
+
+      <p class="small">
+        Set up a simple parent control for this device.
+        Use a general area rather than an exact home address.
+      </p>
+
+      <label>Home Area</label>
+      <input id="homeArea" placeholder="Example: Atlanta">
+
+      <label>Santa Arrival Time</label>
+      <input id="arrivalTime" type="time">
+
+      <label>Create Parent PIN</label>
+      <input id="newPin" type="password" maxlength="8">
+
+      <button class="action primary" onclick="saveParentSettings()">
+        Save Parent Settings
+      </button>
+
+      <button class="action secondary" onclick="closeModal()">
+        Cancel
+      </button>
+
     </div>
 
-    Sleigh:
-    <b>NP-01</b>
+    <div id="loginArea" style="display:none">
 
-    <br>
+      <p>Enter the parent PIN to access Santa Tracker controls.</p>
 
-    Visual lock:
-    <span id="visualLock" class="red">
-        STANDBY
-    </span>
+      <input id="pinInput" type="password" maxlength="8"
+             placeholder="Parent PIN">
 
-    <br>
+      <button class="action primary" onclick="checkPin()">
+        Unlock Parent Settings
+      </button>
 
-    Reindeer:
-    <span class="green">9 / 9</span>
+      <button class="action secondary" onclick="closeModal()">
+        Cancel
+      </button>
 
+    </div>
+
+    <div id="controlArea" style="display:none">
+
+      <h3>Parent Controls</h3>
+
+      <p class="small">
+        Home Area:
+        <b id="savedArea"></b>
+      </p>
+
+      <p class="small">
+        Arrival Time:
+        <b id="savedTime"></b>
+      </p>
+
+      <button class="action primary" onclick="startTracking()">
+        ▶ START SANTA TRACKING
+      </button>
+
+      <button class="action secondary" onclick="stopTracking()">
+        ■ STOP TRACKING
+      </button>
+
+      <button class="action secondary" onclick="resetSettings()">
+        Reset Parent Settings
+      </button>
+
+      <button class="action secondary" onclick="closeModal()">
+        Close
+      </button>
+
+    </div>
+
+  </div>
 </div>
 
-<!-- PARENT SETTINGS BUTTON -->
-<button id="parentButton" onclick="openParentLogin()">
-    🔒 Parent Settings
-</button>
-
-<!-- DASHBOARD -->
-<div class="dashboard">
-
-    <div class="card">
-        <div class="card-title">🎁 PRESENTS</div>
-        <div class="card-value" id="presents">0</div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">🦌 REINDEER</div>
-        <div class="card-value">9 / 9</div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">💨 SPEED</div>
-        <div class="card-value" id="speed">-- MPH</div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">⬆ ALTITUDE</div>
-        <div class="card-value" id="altitude">-- FT</div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">📍 STOP</div>
-        <div class="card-value">
-            <span id="stop">--</span> /
-            <span id="total">--</span>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- PARENT LOGIN -->
-<div id="loginModal" class="modal">
-
-    <div class="modalBox">
-
-        <h2>🔒 Parent Access</h2>
-
-        <p class="small">
-            Enter the parent PIN to change Santa Tracker settings.
-        </p>
-
-        <input
-            id="loginPin"
-            type="password"
-            placeholder="Parent PIN"
-        >
-
-        <button onclick="checkPin()">
-            Unlock Settings
-        </button>
-
-        <button class="secondary" onclick="closeModals()">
-            Cancel
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- FIRST-TIME PARENT SETUP -->
-<div id="setupModal" class="modal">
-
-    <div class="modalBox">
-
-        <h2>🎄 Parent Setup</h2>
-
-        <p class="small">
-            This tracker uses a general area rather than a street address.
-        </p>
-
-        <label>General Home Area</label>
-
-        <input
-            id="homeArea"
-            type="text"
-            placeholder="Example: Atlanta"
-        >
-
-        <label>Santa Arrival Time</label>
-
-        <input
-            id="arrivalTime"
-            type="time"
-        >
-
-        <label>Create Parent PIN</label>
-
-        <input
-            id="newPin"
-            type="password"
-            placeholder="Create a PIN"
-        >
-
-        <button onclick="saveParentSettings()">
-            Save Parent Settings
-        </button>
-
-        <button class="secondary" onclick="closeModals()">
-            Cancel
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- EXISTING PARENT SETTINGS -->
-<div id="settingsModal" class="modal">
-
-    <div class="modalBox">
-
-        <h2>⚙️ Parent Settings</h2>
-
-        <label>General Home Area</label>
-
-        <input
-            id="editArea"
-            type="text"
-        >
-
-        <label>Santa Arrival Time</label>
-
-        <input
-            id="editTime"
-            type="time"
-        >
-
-        <button onclick="saveEditedSettings()">
-            Save Changes
-        </button>
-
-        <button onclick="launchTracker()">
-            ▶ Start Santa Tracking
-        </button>
-
-        <button class="secondary" onclick="closeModals()">
-            Close
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ARRIVAL MESSAGE -->
 <div id="arrival">
-
-    🎅🎄🦌
-
-    <br><br>
-
-    <b>SANTA HAS ARRIVED!</b>
-
-    <br><br>
-
-    <span id="arrivalText"></span>
-
+  <div class="arrivalBox">
+    <div style="font-size:65px">🎅</div>
+    <h1>SANTA HAS ARRIVED!</h1>
+    <p id="arrivalText"></p>
+    <button class="action primary" onclick="closeArrival()">
+      Continue Tracking
+    </button>
+  </div>
 </div>
 
-
-<!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
 
 /* =========================================================
-   DESTINATIONS
+   BASIC SETTINGS
 ========================================================= */
 
-const locations = [
+let scene;
+let camera;
+let renderer;
 
-{name:"North Pole",lat:90,lon:0,presents:0},
-{name:"Reykjavik, Iceland",lat:64,lon:-22,presents:850},
-{name:"London, UK",lat:51.5,lon:-0.1,presents:2100},
-{name:"Paris, France",lat:48.8,lon:2.3,presents:3400},
-{name:"Madrid, Spain",lat:40.4,lon:-3.7,presents:4700},
-{name:"Rome, Italy",lat:41.9,lon:12.5,presents:5900},
-{name:"Berlin, Germany",lat:52.5,lon:13.4,presents:7100},
-{name:"Cairo, Egypt",lat:30,lon:31,presents:9700},
-{name:"Nairobi, Kenya",lat:-1.3,lon:36.8,presents:11200},
-{name:"Cape Town, South Africa",lat:-33.9,lon:18.4,presents:12800},
-{name:"Mumbai, India",lat:19,lon:72.8,presents:14500},
-{name:"Dubai, UAE",lat:25.2,lon:55.3,presents:15900},
-{name:"Bangkok, Thailand",lat:13.7,lon:100.5,presents:17400},
-{name:"Singapore",lat:1.3,lon:103.8,presents:18800},
-{name:"Beijing, China",lat:39.9,lon:116.4,presents:20400},
-{name:"Tokyo, Japan",lat:35.7,lon:139.7,presents:23500},
-{name:"Sydney, Australia",lat:-33.9,lon:151.2,presents:25100},
-{name:"Auckland, New Zealand",lat:-36.8,lon:174.8,presents:26700},
-{name:"Honolulu, Hawaii",lat:21.3,lon:-157.8,presents:28200},
-{name:"Los Angeles, USA",lat:34,lon:-118.2,presents:30100},
-{name:"San Francisco, USA",lat:37.7,lon:-122.4,presents:31600},
-{name:"Seattle, USA",lat:47.6,lon:-122.3,presents:32900},
-{name:"Denver, USA",lat:39.7,lon:-104.9,presents:34300},
-{name:"Dallas, USA",lat:32.8,lon:-96.8,presents:35900},
-{name:"Chicago, USA",lat:41.9,lon:-87.6,presents:37600},
-{name:"New York, USA",lat:40.7,lon:-74,presents:39500},
-{name:"Washington, D.C.",lat:38.9,lon:-77,presents:41100},
-{name:"Atlanta, USA",lat:33.7,lon:-84.4,presents:42800},
-{name:"Miami, USA",lat:25.8,lon:-80.2,presents:44600},
-{name:"Toronto, Canada",lat:43.6,lon:-79.4,presents:46100},
-{name:"Montreal, Canada",lat:45.5,lon:-73.6,presents:47700},
-{name:"Mexico City, Mexico",lat:19.4,lon:-99.1,presents:49400},
-{name:"Havana, Cuba",lat:23.1,lon:-82.4,presents:50800},
-{name:"Panama City, Panama",lat:8.9,lon:-79.5,presents:52300},
-{name:"Lima, Peru",lat:-12,lon:-77,presents:53900},
-{name:"Santiago, Chile",lat:-33.4,lon:-70.6,presents:55400},
-{name:"Buenos Aires, Argentina",lat:-34.6,lon:-58.4,presents:57100},
-{name:"São Paulo, Brazil",lat:-23.5,lon:-46.6,presents:58900},
-{name:"Anchorage, Alaska",lat:61.2,lon:-149.9,presents:60300},
-{name:"North Pole",lat:90,lon:0,presents:62000}
+let earth;
+let earthGroup;
+
+let sleigh;
+let reindeer = [];
+let flightTrail;
+let trackingRing;
+
+let tracking = false;
+let routeIndex = 0;
+let lastMove = 0;
+
+let homeArea = "";
+let arrivalTime = "";
+
+const ROUTE = [
+
+  ["North Pole", 90, 0, 0],
+  ["Reykjavik", 64.15, -21.94, 2500],
+  ["London", 51.50, -0.12, 4200],
+  ["Paris", 48.85, 2.35, 3800],
+  ["Madrid", 40.41, -3.70, 3600],
+  ["Rome", 41.90, 12.49, 4100],
+  ["Cairo", 30.04, 31.23, 4500],
+  ["Nairobi", -1.29, 36.82, 5000],
+  ["Cape Town", -33.92, 18.42, 5200],
+  ["Mumbai", 19.07, 72.87, 4800],
+  ["Dubai", 25.20, 55.27, 4700],
+  ["Bangkok", 13.75, 100.50, 5000],
+  ["Singapore", 1.35, 103.82, 5300],
+  ["Beijing", 39.90, 116.40, 5200],
+  ["Tokyo", 35.68, 139.65, 5500],
+  ["Sydney", -33.86, 151.20, 5600],
+  ["Auckland", -36.85, 174.76, 5400],
+  ["Honolulu", 21.30, -157.85, 4300],
+  ["Los Angeles", 34.05, -118.24, 6200],
+  ["San Francisco", 37.77, -122.42, 6100],
+  ["Seattle", 47.60, -122.33, 5900],
+  ["Denver", 39.73, -104.99, 5700],
+  ["Dallas", 32.77, -96.79, 6000],
+  ["Chicago", 41.88, -87.63, 5800],
+  ["New York", 40.71, -74.00, 6500],
+  ["Washington DC", 38.90, -77.04, 6300],
+  ["Atlanta", 33.75, -84.39, 6400],
+  ["Miami", 25.76, -80.19, 6200],
+  ["Toronto", 43.65, -79.38, 5700],
+  ["Montreal", 45.50, -73.56, 5500],
+  ["Mexico City", 19.43, -99.13, 5800],
+  ["Havana", 23.11, -82.36, 5100],
+  ["Panama City", 8.98, -79.52, 5000],
+  ["Lima", -12.05, -77.04, 5200],
+  ["Santiago", -33.45, -70.67, 5300],
+  ["Buenos Aires", -34.60, -58.38, 5400],
+  ["São Paulo", -23.55, -46.63, 5600],
+  ["Anchorage", 61.21, -149.90, 5200],
+  ["North Pole", 90, 0, 0]
 
 ];
-
-document.getElementById("total").textContent = locations.length;
-
 
 /* =========================================================
    THREE.JS SETUP
 ========================================================= */
 
-const scene = new THREE.Scene();
+function init() {
 
-const camera = new THREE.PerspectiveCamera(
+  scene = new THREE.Scene();
+
+  scene.background = new THREE.Color(0x020611);
+
+  camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
-);
+  );
 
-camera.position.set(0,1.1,3.4);
+  camera.position.set(0, 2.3, 4.8);
 
-const renderer = new THREE.WebGLRenderer({
-    antialias:true
-});
+  renderer = new THREE.WebGLRenderer({
+    antialias: true
+  });
 
-renderer.setSize(
+  renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+  );
+
+  renderer.setSize(
     window.innerWidth,
-    window.innerHeight
-);
+    window.innerHeight - 68
+  );
 
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio,2)
-);
+  document.getElementById("scene").appendChild(renderer.domElement);
 
-document.getElementById("earth")
-    .appendChild(renderer.domElement);
+  /* LIGHTING */
 
+  const ambient = new THREE.AmbientLight(
+    0xffffff,
+    1.5
+  );
+
+  scene.add(ambient);
+
+  const sun = new THREE.DirectionalLight(
+    0xffffff,
+    2
+  );
+
+  sun.position.set(5, 3, 5);
+
+  scene.add(sun);
+
+  /* STARS */
+
+  createStars();
+
+  /* EARTH */
+
+  createEarth();
+
+  /* SLEIGH */
+
+  createSleigh();
+
+  /* TRACKING EFFECT */
+
+  createTrackingRing();
+
+  /* TRAIL */
+
+  createTrail();
+
+  window.addEventListener(
+    "resize",
+    resize
+  );
+
+  document.getElementById("loading")
+    .classList.add("hidden");
+
+  updateMission();
+
+  animate();
+}
 
 /* =========================================================
-   LIGHTS
+   STARS
 ========================================================= */
 
-const sunlight =
-    new THREE.DirectionalLight(
-        0xffffff,
-        2
+function createStars() {
+
+  const geometry = new THREE.BufferGeometry();
+
+  const positions = [];
+
+  for(let i = 0; i < 1800; i++) {
+
+    const radius = 35;
+
+    const theta = Math.random() * Math.PI * 2;
+
+    const phi =
+      Math.acos(
+        2 * Math.random() - 1
+      );
+
+    positions.push(
+      radius *
+      Math.sin(phi) *
+      Math.cos(theta)
     );
 
-sunlight.position.set(5,3,5);
-
-scene.add(sunlight);
-
-const ambient =
-    new THREE.AmbientLight(
-        0x668899,
-        1.2
+    positions.push(
+      radius *
+      Math.sin(phi) *
+      Math.sin(theta)
     );
 
-scene.add(ambient);
+    positions.push(
+      radius *
+      Math.cos(phi)
+    );
+  }
 
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      positions,
+      3
+    )
+  );
+
+  const material =
+    new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.07
+    });
+
+  const stars =
+    new THREE.Points(
+      geometry,
+      material
+    );
+
+  scene.add(stars);
+}
 
 /* =========================================================
    EARTH
 ========================================================= */
 
-const earth =
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            1,
-            64,
-            64
-        ),
-        new THREE.MeshPhongMaterial({
-            map:new THREE.TextureLoader().load(
-                "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg"
-            )
-        })
+function createEarth() {
+
+  earthGroup = new THREE.Group();
+
+  scene.add(earthGroup);
+
+  const geometry =
+    new THREE.SphereGeometry(
+      1.5,
+      64,
+      64
     );
 
-scene.add(earth);
+  const material =
+    new THREE.MeshPhongMaterial({
+      color: 0x2869a5,
+      shininess: 20
+    });
 
-
-/* ATMOSPHERE */
-
-const atmosphere =
+  earth =
     new THREE.Mesh(
-        new THREE.SphereGeometry(
-            1.045,
-            64,
-            64
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0x3399ff,
-            transparent:true,
-            opacity:.13,
-            side:THREE.BackSide
-        })
+      geometry,
+      material
     );
 
-scene.add(atmosphere);
+  earthGroup.add(earth);
 
+  /*
+    Try to load a real Earth image.
+    If the image cannot load, the blue Earth
+    remains visible.
+  */
+
+  const loader =
+    new THREE.TextureLoader();
+
+  loader.load(
+    "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
+    function(texture) {
+
+      earth.material.map = texture;
+      earth.material.color.set(0xffffff);
+      earth.material.needsUpdate = true;
+
+    }
+  );
+
+  /* ATMOSPHERE */
+
+  const atmosphereGeometry =
+    new THREE.SphereGeometry(
+      1.56,
+      64,
+      64
+    );
+
+  const atmosphereMaterial =
+    new THREE.MeshBasicMaterial({
+      color: 0x4db8ff,
+      transparent: true,
+      opacity: 0.10,
+      side: THREE.BackSide
+    });
+
+  const atmosphere =
+    new THREE.Mesh(
+      atmosphereGeometry,
+      atmosphereMaterial
+    );
+
+  earthGroup.add(atmosphere);
+}
 
 /* =========================================================
-   COORDINATES
+   LAT/LON TO EARTH POSITION
 ========================================================= */
 
 function latLonToVector3(
-    lat,
-    lon,
-    radius=1.12
-){
+  lat,
+  lon,
+  radius
+) {
 
-    const phi =
-        (90-lat)*Math.PI/180;
+  const phi =
+    (90 - lat) *
+    Math.PI /
+    180;
 
-    const theta =
-        (lon+180)*Math.PI/180;
+  const theta =
+    (lon + 180) *
+    Math.PI /
+    180;
 
-    return new THREE.Vector3(
+  return new THREE.Vector3(
+    -radius *
+    Math.sin(phi) *
+    Math.cos(theta),
 
-        -radius*
-        Math.sin(phi)*
-        Math.cos(theta),
+    radius *
+    Math.cos(phi),
 
-        radius*
-        Math.cos(phi),
-
-        radius*
-        Math.sin(phi)*
-        Math.sin(theta)
-
-    );
+    radius *
+    Math.sin(phi) *
+    Math.sin(theta)
+  );
 }
-
 
 /* =========================================================
    SLEIGH
 ========================================================= */
 
-const sleigh = new THREE.Group();
+function createSleigh() {
 
-scene.add(sleigh);
+  sleigh = new THREE.Group();
 
+  /* SLEIGH BODY */
 
-/* BODY */
+  const bodyGeometry =
+    new THREE.BoxGeometry(
+      0.42,
+      0.20,
+      0.85
+    );
 
-const red =
+  const bodyMaterial =
     new THREE.MeshPhongMaterial({
-        color:0xb00000
+      color: 0x9e1010,
+      shininess: 80
     });
 
-const gold =
+  const body =
+    new THREE.Mesh(
+      bodyGeometry,
+      bodyMaterial
+    );
+
+  sleigh.add(body);
+
+  /* FRONT CURVE */
+
+  const frontGeometry =
+    new THREE.TorusGeometry(
+      0.23,
+      0.045,
+      8,
+      20,
+      Math.PI
+    );
+
+  const goldMaterial =
     new THREE.MeshPhongMaterial({
-        color:0xffc400,
-        metalness:.7
+      color: 0xffc928,
+      shininess: 100
     });
 
-const body =
+  const front =
     new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .22,.11,.45
-        ),
-        red
+      frontGeometry,
+      goldMaterial
     );
 
-sleigh.add(body);
+  front.rotation.x =
+    Math.PI / 2;
 
+  front.position.z = -0.45;
 
-/* GOLD TOP */
+  sleigh.add(front);
 
-const top =
+  /* SEAT */
+
+  const seatGeometry =
+    new THREE.BoxGeometry(
+      0.34,
+      0.10,
+      0.27
+    );
+
+  const seatMaterial =
+    new THREE.MeshPhongMaterial({
+      color: 0x5d0808
+    });
+
+  const seat =
     new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .24,.035,.47
-        ),
-        gold
+      seatGeometry,
+      seatMaterial
     );
 
-top.position.y=.065;
+  seat.position.y = 0.17;
 
-sleigh.add(top);
+  seat.position.z = 0.05;
 
+  sleigh.add(seat);
 
-/* SEAT */
+  /* GOLD RAILS */
 
-const seat =
+  for(let x of [-0.23, 0.23]) {
+
+    const railGeometry =
+      new THREE.CylinderGeometry(
+        0.025,
+        0.025,
+        0.95,
+        12
+      );
+
+    const rail =
+      new THREE.Mesh(
+        railGeometry,
+        goldMaterial
+      );
+
+    rail.rotation.x =
+      Math.PI / 2;
+
+    rail.rotation.z =
+      x > 0 ? 0.06 : -0.06;
+
+    rail.position.x = x;
+
+    rail.position.y = -0.13;
+
+    rail.position.z = 0;
+
+    sleigh.add(rail);
+  }
+
+  /* PRESENTS */
+
+  for(let i = 0; i < 5; i++) {
+
+    const giftGeometry =
+      new THREE.BoxGeometry(
+        0.13,
+        0.13,
+        0.13
+      );
+
+    const giftMaterial =
+      new THREE.MeshPhongMaterial({
+        color:
+          i % 2 === 0
+            ? 0x2e8b57
+            : 0xd62828
+      });
+
+    const gift =
+      new THREE.Mesh(
+        giftGeometry,
+        giftMaterial
+      );
+
+    gift.position.set(
+      (i % 2 === 0 ? -0.10 : 0.10),
+      0.23,
+      0.18 + i * 0.09
+    );
+
+    sleigh.add(gift);
+  }
+
+  /* SANTA */
+
+  const santaBody =
     new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .17,.12,.16
-        ),
-        new THREE.MeshPhongMaterial({
-            color:0x551111
-        })
+      new THREE.SphereGeometry(
+        0.10,
+        16,
+        16
+      ),
+      new THREE.MeshPhongMaterial({
+        color: 0xd62828
+      })
     );
 
-seat.position.set(
-    0,.12,.08
-);
+  santaBody.position.set(
+    0,
+    0.35,
+    0.05
+  );
 
-sleigh.add(seat);
+  sleigh.add(santaBody);
 
-
-/* BACK */
-
-const back =
+  const head =
     new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .17,.20,.035
-        ),
-        red
+      new THREE.SphereGeometry(
+        0.075,
+        16,
+        16
+      ),
+      new THREE.MeshPhongMaterial({
+        color: 0xffc7a1
+      })
     );
 
-back.position.set(
-    0,.20,.18
-);
+  head.position.set(
+    0,
+    0.47,
+    0.05
+  );
 
-sleigh.add(back);
+  sleigh.add(head);
 
+  /* HAT */
 
-/* RUNNERS */
-
-function makeRunner(x){
-
-    const runner =
-        new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                .012,.012,.55,8
-            ),
-            gold
-        );
-
-    runner.rotation.x =
-        Math.PI/2;
-
-    runner.position.set(
-        x,-.10,0
+  const hat =
+    new THREE.Mesh(
+      new THREE.ConeGeometry(
+        0.10,
+        0.18,
+        16
+      ),
+      new THREE.MeshPhongMaterial({
+        color: 0xd62828
+      })
     );
 
-    sleigh.add(runner);
+  hat.position.set(
+    0,
+    0.61,
+    0.05
+  );
+
+  sleigh.add(hat);
+
+  /* REINDEER */
+
+  createReindeer();
+
+  scene.add(sleigh);
+
+  positionSleigh(0);
+
 }
-
-makeRunner(-.11);
-makeRunner(.11);
-
-
-/* =========================================================
-   PRESENTS
-========================================================= */
-
-function makePresent(
-    x,y,z,color
-){
-
-    const group =
-        new THREE.Group();
-
-    const box =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .075,.075,.075
-            ),
-            new THREE.MeshPhongMaterial({
-                color:color
-            })
-        );
-
-    group.add(box);
-
-    const ribbon =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .08,.012,.012
-            ),
-            gold
-        );
-
-    group.add(ribbon);
-
-    group.position.set(
-        x,y,z
-    );
-
-    sleigh.add(group);
-}
-
-makePresent(-.06,.16,.00,0x00aa55);
-makePresent(.05,.16,.03,0x2255cc);
-makePresent(0,.22,.08,0xcc2222);
-
 
 /* =========================================================
    REINDEER
 ========================================================= */
 
-function makeReindeer(
-    rudolph=false
-){
+function createReindeer() {
 
-    const deer =
+  const names = [
+    "Dasher",
+    "Dancer",
+    "Prancer",
+    "Vixen",
+    "Comet",
+    "Cupid",
+    "Donner",
+    "Blitzen",
+    "Rudolph"
+  ];
+
+  names.forEach(
+    (name, index) => {
+
+      const deer =
         new THREE.Group();
 
-    const brown =
-        new THREE.MeshPhongMaterial({
-            color:
-                rudolph
-                ? 0x783c22
-                : 0x704020
-        });
+      /* BODY */
 
-    const dark =
-        new THREE.MeshPhongMaterial({
-            color:0x30170d
-        });
-
-
-    /* BODY */
-
-    const body =
+      const body =
         new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .075,12,8
-            ),
-            brown
+          new THREE.SphereGeometry(
+            0.075,
+            12,
+            12
+          ),
+          new THREE.MeshPhongMaterial({
+            color: 0x70452b
+          })
         );
 
-    body.scale.set(
-        1.5,.8,1
-    );
+      deer.add(body);
 
-    deer.add(body);
+      /* HEAD */
 
-
-    /* HEAD */
-
-    const head =
+      const head =
         new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .055,12,8
-            ),
-            brown
+          new THREE.SphereGeometry(
+            0.055,
+            12,
+            12
+          ),
+          new THREE.MeshPhongMaterial({
+            color: 0x70452b
+          })
         );
 
-    head.position.set(
-        0,.04,.12
-    );
+      head.position.z = -0.09;
 
-    deer.add(head);
+      deer.add(head);
 
+      /* ANTLERS */
 
-    /* NOSE */
-
-    const noseMaterial =
-        new THREE.MeshPhongMaterial({
-
-            color:
-                rudolph
-                ? 0xff1111
-                : 0x21100a,
-
-            emissive:
-                rudolph
-                ? 0xff0000
-                : 0x000000,
-
-            emissiveIntensity:
-                rudolph
-                ? 3
-                : 0
-        });
-
-    const nose =
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                rudolph?.018:.012,
-                10,
-                10
-            ),
-            noseMaterial
-        );
-
-    nose.position.set(
-        0,.04,.17
-    );
-
-    deer.add(nose);
-
-
-    /* LEGS */
-
-    [
-        [-.04,-.07,.04],
-        [.04,-.07,.04],
-        [-.04,-.07,-.04],
-        [.04,-.07,-.04]
-    ].forEach(p=>{
-
-        const leg =
-            new THREE.Mesh(
-                new THREE.CylinderGeometry(
-                    .009,.009,.11,6
-                ),
-                dark
-            );
-
-        leg.position.set(
-            p[0],
-            p[1],
-            p[2]
-        );
-
-        deer.add(leg);
-    });
-
-
-    /* ANTLERS */
-
-    [-1,1].forEach(side=>{
+      for(let side of [-1, 1]) {
 
         const antler =
-            new THREE.Mesh(
-                new THREE.CylinderGeometry(
-                    .006,
-                    .006,
-                    .08,
-                    6
-                ),
-                dark
-            );
-
-        antler.rotation.z =
-            side*.5;
+          new THREE.Mesh(
+            new THREE.CylinderGeometry(
+              0.008,
+              0.008,
+              0.10,
+              6
+            ),
+            new THREE.MeshPhongMaterial({
+              color: 0xc7a878
+            })
+          );
 
         antler.position.set(
-            side*.025,
-            .095,
-            .12
+          side * 0.035,
+          0.065,
+          -0.10
         );
 
         deer.add(antler);
+      }
 
-    });
+      /* RUDOLPH NOSE */
 
+      if(name === "Rudolph") {
 
-    return deer;
+        const nose =
+          new THREE.Mesh(
+            new THREE.SphereGeometry(
+              0.025,
+              16,
+              16
+            ),
+            new THREE.MeshBasicMaterial({
+              color: 0xff1111
+            })
+          );
+
+        nose.position.set(
+          0,
+          0,
+          -0.145
+        );
+
+        deer.add(nose);
+
+        const glow =
+          new THREE.PointLight(
+            0xff0000,
+            2,
+            0.6
+          );
+
+        glow.position.copy(
+          nose.position
+        );
+
+        deer.add(glow);
+      }
+
+      /*
+        Put the reindeer in two rows
+        in front of the sleigh.
+      */
+
+      const row =
+        Math.floor(index / 3);
+
+      const column =
+        index % 3;
+
+      deer.position.set(
+        (column - 1) * 0.16,
+        0.02,
+        -0.55 - row * 0.20
+      );
+
+      sleigh.add(deer);
+
+      reindeer.push(deer);
+    }
+  );
 }
-
 
 /* =========================================================
-   CREATE 9 REINDEER
+   TRACKING RING
 ========================================================= */
 
-const reindeerTeam = [];
+function createTrackingRing() {
 
-for(let i=0;i<9;i++){
-
-    const deer =
-        makeReindeer(i===0);
-
-    /*
-       The reindeer are arranged in pairs.
-       Rudolph is at the front.
-    */
-
-    const row =
-        Math.floor(i/2);
-
-    const side =
-        i%2===0 ? -1 : 1;
-
-    deer.position.set(
-        side*.09,
-        .01,
-        -.35-(row*.13)
+  const geometry =
+    new THREE.TorusGeometry(
+      0.19,
+      0.012,
+      12,
+      32
     );
 
-    deer.scale.set(
-        .75,.75,.75
+  const material =
+    new THREE.MeshBasicMaterial({
+      color: 0xff3333
+    });
+
+  trackingRing =
+    new THREE.Mesh(
+      geometry,
+      material
     );
 
-    sleigh.add(deer);
-
-    reindeerTeam.push(deer);
+  scene.add(trackingRing);
 }
-
 
 /* =========================================================
    FLIGHT TRAIL
 ========================================================= */
 
-const trailPoints=[];
+function createTrail() {
 
-for(let i=0;i<20;i++){
+  const geometry =
+    new THREE.BufferGeometry();
 
-    trailPoints.push(
-        new THREE.Vector3(
-            0,
-            0,
-            .5+i*.045
-        )
+  const points = [];
+
+  for(let i = 0; i < 20; i++) {
+
+    points.push(
+      new THREE.Vector3(
+        0,
+        0,
+        i * 0.04
+      )
     );
+  }
+
+  geometry.setFromPoints(points);
+
+  const material =
+    new THREE.LineBasicMaterial({
+      color: 0xffd44d,
+      transparent: true,
+      opacity: .65
+    });
+
+  flightTrail =
+    new THREE.Line(
+      geometry,
+      material
+    );
+
+  sleigh.add(flightTrail);
 }
 
-const trail =
-    new THREE.Line(
-        new THREE.BufferGeometry()
-            .setFromPoints(trailPoints),
-
-        new THREE.LineBasicMaterial({
-            color:0x66ddff,
-            transparent:true,
-            opacity:.7
-        })
-    );
-
-sleigh.add(trail);
-
-
 /* =========================================================
-   SANTA HIGHLIGHT
+   POSITION SLEIGH
 ========================================================= */
 
-const ring =
-    new THREE.Mesh(
+function positionSleigh(index) {
 
-        new THREE.RingGeometry(
-            .17,.19,32
-        ),
+  const destination =
+    ROUTE[index];
 
-        new THREE.MeshBasicMaterial({
-            color:0xff3333,
-            side:THREE.DoubleSide,
-            transparent:true,
-            opacity:.9
-        })
-
+  const position =
+    latLonToVector3(
+      destination[1],
+      destination[2],
+      1.72
     );
 
-scene.add(ring);
+  sleigh.position.copy(
+    position
+  );
 
+  trackingRing.position.copy(
+    position
+  );
+
+  /*
+    Point the sleigh away from Earth.
+  */
+
+  sleigh.lookAt(
+    new THREE.Vector3(
+      0,
+      0,
+      0
+    )
+  );
+}
 
 /* =========================================================
-   TRACKING VARIABLES
+   UPDATE MISSION
 ========================================================= */
 
-let current = 0;
+function updateMission() {
 
-let running = false;
+  const current =
+    ROUTE[routeIndex];
 
-let parentConfigured = false;
-
-
-/* =========================================================
-   MOVE SANTA
-========================================================= */
-
-function moveSanta(){
-
-    if(!running)return;
-
-    current++;
-
-    if(current>=locations.length)
-        current=0;
-
-    const destination =
-        locations[current];
-
-    const next =
-        locations[
-            (current+1)%locations.length
-        ];
-
-
-    const position =
-        latLonToVector3(
-            destination.lat,
-            destination.lon,
-            1.18
-        );
-
-
-    /*
-       Put the sleigh above the Earth.
-    */
-
-    sleigh.position.copy(position);
-
-
-    /*
-       Make the sleigh point roughly
-       along its travel direction.
-    */
-
-    const nextPosition =
-        latLonToVector3(
-            next.lat,
-            next.lon,
-            1.18
-        );
-
-    sleigh.lookAt(nextPosition);
-
-
-    /*
-       Put tracking ring underneath
-       the sleigh.
-    */
-
-    ring.position.copy(position);
-
-    ring.lookAt(
-        new THREE.Vector3(0,0,0)
-    );
-
-
-    /* INFORMATION */
-
-    document.getElementById(
-        "location"
-    ).textContent =
-        destination.name;
-
-    document.getElementById(
-        "next"
-    ).textContent =
-        next.name;
-
-    document.getElementById(
-        "presents"
-    ).textContent =
-        destination.presents.toLocaleString();
-
-    document.getElementById(
-        "stop"
-    ).textContent =
-        current+1;
-
-    document.getElementById(
-        "speed"
-    ).textContent =
-        (
-            Math.floor(
-                Math.random()*10000
-            )+30000
-        ).toLocaleString()
-        +" MPH";
-
-    document.getElementById(
-        "altitude"
-    ).textContent =
-        (
-            Math.floor(
-                Math.random()*20000
-            )+80000
-        ).toLocaleString()
-        +" FT";
-
-    const signal =
-        Math.floor(
-            Math.random()*12
-        )+88;
-
-    document.getElementById(
-        "signal"
-    ).textContent =
-        signal+"%";
-
-
-    /* RADIO MESSAGE */
-
-    const messages=[
-
-        "NP-01 to North Pole Control: sleigh systems nominal.",
-
-        "Reindeer beacon detected. Flight path confirmed.",
-
-        "Santa transmission received. Route continuing.",
-
-        "Workshop relay: present inventory synchronized.",
-
-        "Rudolph beacon is active. Visibility is excellent.",
-
-        "Sleigh telemetry received. All nine reindeer accounted for.",
-
-        "North Pole Control: next destination confirmed.",
-
-        "Santa radio channel locked. Continuing flight.",
-
-        "Sleigh altitude stable. Reindeer team maintaining formation."
-
+  const next =
+    ROUTE[
+      (routeIndex + 1) %
+      ROUTE.length
     ];
 
-    document.getElementById(
-        "radio"
-    ).innerHTML =
-        "📻 <b>FICTIONAL SANTA RADIO</b><br>"
-        +
-        messages[
-            Math.floor(
-                Math.random()*messages.length
-            )
-        ];
+  document.getElementById(
+    "location"
+  ).textContent =
+    current[0];
 
+  document.getElementById(
+    "nextStop"
+  ).textContent =
+    next[0];
 
-    /* CAMERA FOLLOWS SANTA */
+  document.getElementById(
+    "presents"
+  ).textContent =
+    current[3].toLocaleString();
 
-    focusCamera(position);
+  document.getElementById(
+    "speed"
+  ).textContent =
+    tracking
+      ? (8500 + Math.floor(Math.random()*3500))
+        .toLocaleString() + " mph"
+      : "0 mph";
 
-
-    setTimeout(
-        moveSanta,
-        4000
-    );
+  document.getElementById(
+    "altitude"
+  ).textContent =
+    tracking
+      ? (85000 + Math.floor(Math.random()*20000))
+        .toLocaleString() + " ft"
+      : "0 ft";
 }
-
 
 /* =========================================================
-   CAMERA FOLLOW
+   RADIO SIGNALS
 ========================================================= */
 
-function focusCamera(position){
+const radioMessages = [
 
-    const direction =
-        position.clone()
-        .normalize();
+  "NP-01: Sleigh transmission received.",
 
-    const cameraPosition =
-        direction.multiplyScalar(2.55);
+  "RUDOLPH-01: Reindeer beacon detected.",
 
-    camera.position.lerp(
-        cameraPosition,
-        .12
-    );
+  "ELF-NET: Workshop relay online.",
 
-    camera.lookAt(
-        position
-    );
+  "Santa's sleigh is moving along the route.",
+
+  "North Pole command confirms signal lock.",
+
+  "Tracking satellites have acquired the sleigh.",
+
+  "Santa radio frequency stable.",
+
+  "Reindeer formation confirmed.",
+
+  "Mission Control: Santa is continuing his route."
+
+];
+
+function updateRadio() {
+
+  const message =
+    radioMessages[
+      Math.floor(
+        Math.random() *
+        radioMessages.length
+      )
+    ];
+
+  document.getElementById(
+    "radioMessage"
+  ).textContent =
+    message;
 }
-
-
-/* =========================================================
-   PARENT SETTINGS
-========================================================= */
-
-function openParentLogin(){
-
-    if(!localStorage.getItem(
-        "santaParentPin"
-    )){
-
-        document.getElementById(
-            "setupModal"
-        ).style.display="flex";
-
-        return;
-    }
-
-    document.getElementById(
-        "loginModal"
-    ).style.display="flex";
-}
-
-
-function checkPin(){
-
-    const entered =
-        document.getElementById(
-            "loginPin"
-        ).value;
-
-    const saved =
-        localStorage.getItem(
-            "santaParentPin"
-        );
-
-    if(entered===saved){
-
-        document.getElementById(
-            "loginModal"
-        ).style.display="none";
-
-        document.getElementById(
-            "editArea"
-        ).value =
-            localStorage.getItem(
-                "santaHomeArea"
-            ) || "";
-
-        document.getElementById(
-            "editTime"
-        ).value =
-            localStorage.getItem(
-                "santaArrivalTime"
-            ) || "";
-
-        document.getElementById(
-            "settingsModal"
-        ).style.display="flex";
-
-    }else{
-
-        alert(
-            "Incorrect parent PIN."
-        );
-
-    }
-
-}
-
-
-function saveParentSettings(){
-
-    const area =
-        document.getElementById(
-            "homeArea"
-        ).value.trim();
-
-    const time =
-        document.getElementById(
-            "arrivalTime"
-        ).value;
-
-    const pin =
-        document.getElementById(
-            "newPin"
-        ).value;
-
-    if(!area || !time || !pin){
-
-        alert(
-            "Please complete all parent settings."
-        );
-
-        return;
-    }
-
-    localStorage.setItem(
-        "santaHomeArea",
-        area
-    );
-
-    localStorage.setItem(
-        "santaArrivalTime",
-        time
-    );
-
-    localStorage.setItem(
-        "santaParentPin",
-        pin
-    );
-
-    parentConfigured=true;
-
-    document.getElementById(
-        "setupModal"
-    ).style.display="none";
-
-    document.getElementById(
-        "settingsModal"
-    ).style.display="flex";
-
-}
-
-
-function saveEditedSettings(){
-
-    const area =
-        document.getElementById(
-            "editArea"
-        ).value.trim();
-
-    const time =
-        document.getElementById(
-            "editTime"
-        ).value;
-
-    if(!area || !time){
-
-        alert(
-            "Please enter an area and arrival time."
-        );
-
-        return;
-    }
-
-    localStorage.setItem(
-        "santaHomeArea",
-        area
-    );
-
-    localStorage.setItem(
-        "santaArrivalTime",
-        time
-    );
-
-    alert(
-        "Parent settings saved."
-    );
-}
-
-
-function launchTracker(){
-
-    parentConfigured=true;
-
-    document.getElementById(
-        "settingsModal"
-    ).style.display="none";
-
-    running=true;
-
-    document.getElementById(
-        "status"
-    ).textContent="CONNECTED";
-
-    document.getElementById(
-        "status"
-    ).className="green";
-
-    document.getElementById(
-        "visualLock"
-    ).textContent="ACTIVE";
-
-    document.getElementById(
-        "visualLock"
-    ).className="green";
-
-    moveSanta();
-}
-
-
-function closeModals(){
-
-    document.querySelectorAll(
-        ".modal"
-    ).forEach(
-        m=>m.style.display="none"
-    );
-
-}
-
-
-/* =========================================================
-   ARRIVAL CHECK
-========================================================= */
-
-function checkArrival(){
-
-    const area =
-        localStorage.getItem(
-            "santaHomeArea"
-        );
-
-    const arrivalTime =
-        localStorage.getItem(
-            "santaArrivalTime"
-        );
-
-    if(!area || !arrivalTime)
-        return;
-
-    const now =
-        new Date();
-
-    const currentTime =
-        now.toTimeString()
-        .slice(0,5);
-
-    if(currentTime===arrivalTime){
-
-        document.getElementById(
-            "arrivalText"
-        ).textContent =
-            "Santa's fictional tracker shows him arriving in "
-            +area+"!";
-
-        document.getElementById(
-            "arrival"
-        ).style.display="block";
-
-    }
-
-}
-
 
 /* =========================================================
    ANIMATION
 ========================================================= */
 
-function animate(){
+function animate(time) {
 
-    requestAnimationFrame(
-        animate
-    );
+  requestAnimationFrame(
+    animate
+  );
 
-    /*
-       The Earth rotates slowly.
-       Santa stays above the Earth and
-       the camera keeps him visible.
-    */
+  if(earthGroup) {
 
-    earth.rotation.y += .00035;
+    earthGroup.rotation.y +=
+      tracking
+        ? 0.0008
+        : 0.00035;
+  }
 
-    atmosphere.rotation.y += .00025;
-
-
-    /*
-       Animate reindeer slightly so they
-       look like they are flying.
-    */
-
-    reindeerTeam.forEach(
-        (deer,index)=>{
-
-            deer.position.y =
-                .01+
-                Math.sin(
-                    Date.now()*.008+
-                    index
-                )*.008;
-
-        }
-    );
-
-
-    /*
-       Pulse the Santa tracking ring.
-    */
+  if(trackingRing) {
 
     const scale =
-        1+
-        Math.sin(
-            Date.now()*.005
-        )*.15;
+      1 +
+      Math.sin(time * 0.005) *
+      0.18;
 
-    ring.scale.set(
-        scale,
-        scale,
-        scale
+    trackingRing.scale.set(
+      scale,
+      scale,
+      scale
+    );
+  }
+
+  /*
+    Move to the next destination every
+    5 seconds while tracking.
+  */
+
+  if(
+    tracking &&
+    time - lastMove > 5000
+  ) {
+
+    lastMove = time;
+
+    routeIndex++;
+
+    if(
+      routeIndex >=
+      ROUTE.length
+    ) {
+      routeIndex = 0;
+    }
+
+    positionSleigh(
+      routeIndex
     );
 
+    updateMission();
 
-    renderer.render(
-        scene,
-        camera
-    );
+    updateRadio();
+
+    focusOnSanta();
+  }
+
+  renderer.render(
+    scene,
+    camera
+  );
 }
 
-animate();
+/* =========================================================
+   CAMERA
+========================================================= */
 
+function focusOnSanta() {
+
+  if(!sleigh) return;
+
+  const p =
+    sleigh.position.clone();
+
+  const direction =
+    p.clone().normalize();
+
+  const cameraPosition =
+    p.clone().add(
+      direction.multiplyScalar(2.2)
+    );
+
+  camera.position.copy(
+    cameraPosition
+  );
+
+  camera.lookAt(
+    p
+  );
+}
+
+/* =========================================================
+   PARENT SETTINGS
+========================================================= */
+
+document.getElementById(
+  "settingsButton"
+).onclick =
+  openParentSettings;
+
+function openParentSettings() {
+
+  document.getElementById(
+    "modal"
+  ).style.display = "flex";
+
+  const savedPin =
+    localStorage.getItem(
+      "santaParentPin"
+    );
+
+  if(savedPin) {
+
+    document.getElementById(
+      "setupArea"
+    ).style.display = "none";
+
+    document.getElementById(
+      "loginArea"
+    ).style.display = "block";
+
+    document.getElementById(
+      "controlArea"
+    ).style.display = "none";
+
+  } else {
+
+    document.getElementById(
+      "setupArea"
+    ).style.display = "block";
+
+    document.getElementById(
+      "loginArea"
+    ).style.display = "none";
+
+    document.getElementById(
+      "controlArea"
+    ).style.display = "none";
+  }
+}
+
+function closeModal() {
+
+  document.getElementById(
+    "modal"
+  ).style.display = "none";
+}
+
+function saveParentSettings() {
+
+  const area =
+    document.getElementById(
+      "homeArea"
+    ).value.trim();
+
+  const time =
+    document.getElementById(
+      "arrivalTime"
+    ).value;
+
+  const pin =
+    document.getElementById(
+      "newPin"
+    ).value;
+
+  if(!area || !time || !pin) {
+
+    alert(
+      "Please complete all parent settings."
+    );
+
+    return;
+  }
+
+  localStorage.setItem(
+    "santaHomeArea",
+    area
+  );
+
+  localStorage.setItem(
+    "santaArrivalTime",
+    time
+  );
+
+  localStorage.setItem(
+    "santaParentPin",
+    pin
+  );
+
+  alert(
+    "Parent settings saved!"
+  );
+
+  showControls();
+}
+
+function checkPin() {
+
+  const entered =
+    document.getElementById(
+      "pinInput"
+    ).value;
+
+  const saved =
+    localStorage.getItem(
+      "santaParentPin"
+    );
+
+  if(entered === saved) {
+
+    showControls();
+
+  } else {
+
+    alert(
+      "Incorrect parent PIN."
+    );
+  }
+}
+
+function showControls() {
+
+  homeArea =
+    localStorage.getItem(
+      "santaHomeArea"
+    ) || "";
+
+  arrivalTime =
+    localStorage.getItem(
+      "santaArrivalTime"
+    ) || "";
+
+  document.getElementById(
+    "setupArea"
+  ).style.display = "none";
+
+  document.getElementById(
+    "loginArea"
+  ).style.display = "none";
+
+  document.getElementById(
+    "controlArea"
+  ).style.display = "block";
+
+  document.getElementById(
+    "savedArea"
+  ).textContent =
+    homeArea;
+
+  document.getElementById(
+    "savedTime"
+  ).textContent =
+    arrivalTime;
+}
+
+/* =========================================================
+   START / STOP
+========================================================= */
+
+function startTracking() {
+
+  tracking = true;
+
+  document.getElementById(
+    "trackingStatus"
+  ).textContent =
+    "● LIVE TRACKING";
+
+  document.getElementById(
+    "trackingStatus"
+  ).style.color =
+    "#5cff9d";
+
+  lastMove = performance.now();
+
+  updateMission();
+
+  updateRadio();
+
+  focusOnSanta();
+
+  closeModal();
+}
+
+function stopTracking() {
+
+  tracking = false;
+
+  document.getElementById(
+    "trackingStatus"
+  ).textContent =
+    "● TRACKING PAUSED";
+
+  document.getElementById(
+    "trackingStatus"
+  ).style.color =
+    "#ffd45c";
+
+  updateMission();
+}
+
+function resetSettings() {
+
+  if(
+    confirm(
+      "Reset all Santa parent settings?"
+    )
+  ) {
+
+    localStorage.removeItem(
+      "santaParentPin"
+    );
+
+    localStorage.removeItem(
+      "santaHomeArea"
+    );
+
+    localStorage.removeItem(
+      "santaArrivalTime"
+    );
+
+    location.reload();
+  }
+}
+
+/* =========================================================
+   ARRIVAL TIME
+========================================================= */
+
+function checkArrivalTime() {
+
+  if(!tracking) return;
+
+  const savedTime =
+    localStorage.getItem(
+      "santaArrivalTime"
+    );
+
+  const area =
+    localStorage.getItem(
+      "santaHomeArea"
+    );
+
+  if(!savedTime || !area)
+    return;
+
+  const now =
+    new Date();
+
+  const current =
+    now.toTimeString()
+      .slice(0,5);
+
+  if(current === savedTime) {
+
+    document.getElementById(
+      "arrivalText"
+    ).textContent =
+      "Santa is delivering presents in " +
+      area +
+      "!";
+
+    document.getElementById(
+      "arrival"
+    ).style.display =
+      "flex";
+  }
+}
+
+function closeArrival() {
+
+  document.getElementById(
+    "arrival"
+  ).style.display =
+    "none";
+}
 
 /* =========================================================
    RESIZE
 ========================================================= */
 
-window.addEventListener(
-    "resize",
-    ()=>{
+function resize() {
 
-        camera.aspect =
-            window.innerWidth/
-            window.innerHeight;
+  camera.aspect =
+    window.innerWidth /
+    (window.innerHeight - 68);
 
-        camera.updateProjectionMatrix();
+  camera.updateProjectionMatrix();
 
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-
-    }
-);
-
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight - 68
+  );
+}
 
 /* =========================================================
-   ARRIVAL TIMER
-========================================================= */
-
-setInterval(
-    checkArrival,
-    1000
-);
-
-
-/* =========================================================
-   CHECK WHETHER PARENT SETTINGS EXIST
+   START
 ========================================================= */
 
 if(
-    localStorage.getItem(
-        "santaParentPin"
-    )
-){
+  typeof THREE === "undefined"
+) {
 
-    document.getElementById(
-        "status"
-    ).textContent=
-        "PARENT SETTINGS SAVED";
+  document.getElementById(
+    "loading"
+  ).innerHTML =
+    "⚠️ The 3D library could not load. Check your internet connection and refresh the page.";
 
-}else{
+} else {
 
-    document.getElementById(
-        "status"
-    ).textContent=
-        "PARENT SETUP REQUIRED";
-
+  init();
 }
+
+/* Check arrival time every minute */
+
+setInterval(
+  checkArrivalTime,
+  30000
+);
 
 </script>
 
