@@ -1,606 +1,375 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>My Santa Tracker</title>
-
-<script src="https://unpkg.com/globe.gl"></script>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    overflow: hidden;
-    background: #000;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* =====================================================
-   GLOBE
-   ===================================================== */
-
-#globe {
-    width: 100vw;
-    height: 100vh;
-}
-
-
-/* =====================================================
-   SANTA TRACKER LOGO
-   ===================================================== */
-
-#logo {
-    position: absolute;
-    top: 22px;
-    right: 25px;
-
-    z-index: 20;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    color: white;
-
-    font-weight: bold;
-    letter-spacing: 2px;
-
-    text-shadow:
-        0 2px 5px #000,
-        0 0 10px rgba(255,255,255,.25);
-}
-
-#santaFace {
-    width: 48px;
-    height: 48px;
-
-    position: relative;
-
-    background: #e6a06a;
-
-    border-radius: 50%;
-
-    border: 2px solid white;
-
-    box-shadow:
-        0 0 10px rgba(255,255,255,.3),
-        0 3px 8px rgba(0,0,0,.6);
-}
-
-/* Santa hat */
-
-#santaHat {
-    position: absolute;
-
-    width: 44px;
-    height: 24px;
-
-    left: 1px;
-    top: -15px;
-
-    background: #c91e2b;
-
-    border-radius: 40px 40px 4px 4px;
-
-    transform: rotate(-5deg);
-
-    border-bottom: 6px solid white;
-}
-
-#hatBall {
-    position: absolute;
-
-    width: 9px;
-    height: 9px;
-
-    background: white;
-
-    border-radius: 50%;
-
-    right: -3px;
-    top: -4px;
-}
-
-/* Santa beard */
-
-#beard {
-    position: absolute;
-
-    left: 7px;
-    bottom: -1px;
-
-    width: 30px;
-    height: 21px;
-
-    background: white;
-
-    border-radius: 8px 8px 18px 18px;
-}
-
-/* Eyes */
-
-.eye {
-    position: absolute;
-
-    width: 5px;
-    height: 5px;
-
-    background: #111;
-
-    border-radius: 50%;
-
-    top: 20px;
-}
-
-.eye.left {
-    left: 13px;
-}
-
-.eye.right {
-    right: 13px;
-}
-
-#logoText {
-    font-size: 19px;
-}
-
-
-/* =====================================================
-   TRACKING CONSOLE
-   ===================================================== */
-
-#trackingPanel {
-
-    position: absolute;
-
-    top: 25px;
-    left: 25px;
-
-    width: 310px;
-
-    background: rgba(8,12,14,.92);
-
-    border: 2px solid #687277;
-
-    border-radius: 5px;
-
-    color: white;
-
-    padding: 18px;
-
-    z-index: 10;
-
-    box-shadow:
-        0 0 15px rgba(0,0,0,.85),
-        inset 0 0 20px rgba(255,255,255,.03);
-
-    backdrop-filter: blur(5px);
-}
-
-
-/* Header */
-
-#panelHeader {
-
-    border-bottom: 1px solid #596267;
-
-    padding-bottom: 12px;
-
-    margin-bottom: 14px;
-}
-
-#panelHeader h2 {
-
-    margin: 0;
-
-    font-size: 21px;
-
-    letter-spacing: 2px;
-}
-
-#status {
-
-    margin-top: 8px;
-
-    font-size: 12px;
-
-    letter-spacing: 1px;
-}
-
-#statusDot {
-
-    display: inline-block;
-
-    width: 9px;
-    height: 9px;
-
-    background: #45d66b;
-
-    border-radius: 50%;
-
-    margin-right: 7px;
-
-    box-shadow: 0 0 8px #45d66b;
-}
-
-
-/* =====================================================
-   INFORMATION ROWS
-   ===================================================== */
-
-.infoRow {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    border-bottom: 1px solid rgba(255,255,255,.12);
-
-    padding: 10px 0;
-
-    font-size: 13px;
-
-    gap: 10px;
-}
-
-.infoName {
-
-    color: #aeb7bb;
-}
-
-.infoValue {
-
-    font-weight: bold;
-
-    text-align: right;
-}
-
-
-/* =====================================================
-   RADIO SIGNAL
-   ===================================================== */
-
-#signalBox {
-
-    margin-top: 15px;
-
-    padding-top: 12px;
-
-    border-top: 1px solid #596267;
-}
-
-#signalTitle {
-
-    font-size: 11px;
-
-    color: #aeb7bb;
-
-    margin-bottom: 7px;
-
-    letter-spacing: 1px;
-}
-
-#signalBars {
-
-    display: flex;
-
-    gap: 3px;
-
-    height: 16px;
-}
-
-.signalBar {
-
-    flex: 1;
-
-    background: #45d66b;
-
-    box-shadow: 0 0 5px rgba(69,214,107,.4);
-}
-
-#signalText {
-
-    margin-top: 6px;
-
-    font-size: 11px;
-
-    color: #45d66b;
-}
-
-
-/* =====================================================
-   CONNECTIONS
-   ===================================================== */
-
-#connections {
-
-    margin-top: 14px;
-
-    border-top: 1px solid #596267;
-
-    padding-top: 10px;
-}
-
-.connection {
-
-    display: grid;
-
-    grid-template-columns: 25px 1fr auto;
-
-    align-items: center;
-
-    font-size: 10px;
-
-    letter-spacing: .5px;
-
-    padding: 7px 0;
-}
-
-.connectionIcon {
-
-    font-size: 15px;
-}
-
-.connectionStatus {
-
-    color: #45d66b;
-
-    font-size: 8px;
-}
-
-.connectionStatus.waiting {
-
-    color: #d5a84c;
-}
-
-.connectionLine {
-
-    height: 12px;
-
-    width: 1px;
-
-    margin-left: 12px;
-
-    background: #596267;
-}
-
-
-/* =====================================================
-   CELL TOWER CONTROL
-   ===================================================== */
-
-#towerControl {
-
-    margin-top: 15px;
-
-    padding-top: 12px;
-
-    border-top: 1px solid #596267;
-}
-
-#towerTitle {
-
-    font-size: 10px;
-
-    color: #aeb7bb;
-
-    letter-spacing: 1px;
-
-    margin-bottom: 8px;
-}
-
-#towerButton {
-
-    width: 100%;
-
-    padding: 9px 10px;
-
-    border: 1px solid #45d66b;
-
-    background: rgba(69,214,107,.12);
-
-    color: #45d66b;
-
-    font-weight: bold;
-
-    letter-spacing: 1px;
-
-    border-radius: 3px;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
-
-#towerButton:hover {
-
-    background: rgba(69,214,107,.25);
-}
-
-#towerButton.off {
-
-    border-color: #777;
-
-    background: rgba(100,100,100,.15);
-
-    color: #aaa;
-}
-
-
-/* =====================================================
-   BOTTOM TEXT
-   ===================================================== */
-
-#bottomText {
-
-    margin-top: 15px;
-
-    font-size: 10px;
-
-    color: #858e92;
-
-    line-height: 1.5;
-}
-
-
-/* =====================================================
-   NORTH POLE LABEL
-   ===================================================== */
-
-.northPoleNotice {
-
-    color: #8fdcff !important;
-
-}
-
-
-/* =====================================================
-   MOBILE
-   ===================================================== */
-
-@media(max-width:700px) {
-
-    #trackingPanel {
-
-        width: 280px;
-
-        left: 10px;
-
-        top: 10px;
-
-        padding: 14px;
-    }
-
-    #logo {
-
-        top: 12px;
-
-        right: 12px;
-    }
-
-    #logoText {
-
-        font-size: 14px;
-    }
-
-}
-
-</style>
+    <title>My Santa Tracker</title>
+
+    <script src="https://unpkg.com/globe.gl"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            font-family: Arial, sans-serif;
+        }
+
+        #globe {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* ================================
+           LOGO
+           ================================ */
+
+        #logo {
+            position: absolute;
+            top: 18px;
+            left: 25px;
+            width: 290px;
+            z-index: 20;
+            color: white;
+        }
+
+        #logoSanta {
+            font-size: 32px;
+            margin-right: 8px;
+        }
+
+        #logoName {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #logoTitle {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px rgba(255,255,255,.3);
+        }
+
+        #logoSubtitle {
+            margin-top: 3px;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: #aeb7bb;
+        }
+
+        #logoLine {
+            width: 100%;
+            height: 2px;
+            margin-top: 10px;
+            background: #596267;
+        }
+
+        /* ================================
+           PARENT SETTINGS
+           ================================ */
+
+        #parentButton {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            z-index: 30;
+            padding: 10px 14px;
+            background: rgba(8,12,14,.92);
+            color: white;
+            border: 1px solid #687277;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        #parentButton:hover {
+            background: rgba(25,32,36,.96);
+        }
+
+        /* ================================
+           TRACKING PANEL
+           ================================ */
+
+        #trackingPanel {
+            position: absolute;
+            top: 112px;
+            left: 25px;
+            width: 290px;
+            background: rgba(8,12,14,.90);
+            border: 2px solid #687277;
+            border-radius: 4px;
+            color: white;
+            padding: 18px;
+            box-sizing: border-box;
+            z-index: 10;
+            box-shadow:
+                0 0 12px rgba(0,0,0,.8),
+                inset 0 0 20px rgba(255,255,255,.03);
+        }
+
+        #panelHeader {
+            border-bottom: 1px solid #596267;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        #panelHeader h2 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        #status {
+            margin-top: 8px;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        #statusDot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            background: #45d66b;
+            border-radius: 50%;
+            margin-right: 7px;
+            box-shadow: 0 0 8px #45d66b;
+        }
+
+        .infoRow {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .infoName {
+            color: #aeb7bb;
+        }
+
+        .infoValue {
+            font-weight: bold;
+            max-width: 140px;
+            text-align: right;
+        }
+
+        #signalBox {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #596267;
+        }
+
+        #signalTitle {
+            font-size: 11px;
+            color: #aeb7bb;
+            margin-bottom: 7px;
+            letter-spacing: 1px;
+        }
+
+        #signalBars {
+            display: flex;
+            gap: 3px;
+            height: 16px;
+        }
+
+        .signalBar {
+            flex: 1;
+            background: #45d66b;
+            box-shadow: 0 0 5px rgba(69,214,107,.4);
+        }
+
+        #signalText {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #45d66b;
+        }
+
+        #connections {
+            margin-top: 14px;
+            border-top: 1px solid #596267;
+            padding-top: 10px;
+        }
+
+        .connection {
+            display: grid;
+            grid-template-columns: 25px 1fr auto;
+            align-items: center;
+            font-size: 10px;
+            letter-spacing: .5px;
+            padding: 7px 0;
+        }
+
+        .connectionIcon {
+            font-size: 15px;
+        }
+
+        .connectionStatus {
+            color: #45d66b;
+            font-size: 8px;
+        }
+
+        .connectionStatus.waiting {
+            color: #d5a84c;
+        }
+
+        .connectionLine {
+            height: 12px;
+            width: 1px;
+            margin-left: 12px;
+            background: #596267;
+        }
+
+        #bottomText {
+            margin-top: 15px;
+            font-size: 10px;
+            color: #858e92;
+            line-height: 1.5;
+        }
+
+        /* ================================
+           PARENT WINDOW
+           ================================ */
+
+        #parentModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0,0,0,.68);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #parentModal.open {
+            display: flex;
+        }
+
+        #parentBox {
+            width: 360px;
+            max-width: calc(100vw - 30px);
+            background: #080c0e;
+            border: 2px solid #687277;
+            border-radius: 5px;
+            color: white;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,.8);
+        }
+
+        .parentField {
+            margin-top: 14px;
+        }
+
+        .parentField label {
+            display: block;
+            font-size: 10px;
+            color: #aeb7bb;
+            letter-spacing: 1px;
+            margin-bottom: 7px;
+        }
+
+        .parentField select,
+        .parentField input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #11181c;
+            color: white;
+            border: 1px solid #596267;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        #parentEstimate {
+            margin-top: 15px;
+            padding: 12px;
+            border: 1px solid #596267;
+            color: #45d66b;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .parentButtons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .parentButtons button {
+            flex: 1;
+            padding: 10px;
+            background: #11181c;
+            color: white;
+            border: 1px solid #596267;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 
 <body>
 
-
-<!-- =====================================================
-     SANTA TRACKER LOGO
-     ===================================================== -->
-
 <div id="logo">
+    <span id="logoSanta">🎅</span>
 
-    <div id="santaFace">
+    <span id="logoName">
+        <div id="logoTitle">SANTA TRACKER</div>
+        <div id="logoSubtitle">NORTH POLE TRACKING NETWORK</div>
+    </span>
 
-        <div id="santaHat">
-            <div id="hatBall"></div>
-        </div>
-
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-
-        <div id="beard"></div>
-
-    </div>
-
-    <div id="logoText">
-        SANTA TRACKER
-    </div>
-
+    <div id="logoLine"></div>
 </div>
 
 
-<!-- =====================================================
-     TRACKING CONSOLE
-     ===================================================== -->
+<button id="parentButton">
+    ⚙ PARENT SETTINGS
+</button>
+
 
 <div id="trackingPanel">
 
     <div id="panelHeader">
-
         <h2>TRACKING CONSOLE</h2>
 
         <div id="status">
-
             <span id="statusDot"></span>
-
             TRACKING ACTIVE
-
         </div>
-
     </div>
 
 
     <div class="infoRow">
-
-        <span class="infoName">
-            CURRENT LOCATION
-        </span>
-
-        <span class="infoValue" id="location">
-            NORTH POLE
-        </span>
-
+        <span class="infoName">CURRENT LOCATION</span>
+        <span class="infoValue" id="location">NORTH POLE</span>
     </div>
 
 
     <div class="infoRow">
-
-        <span class="infoName">
-            SPEED
-        </span>
-
-        <span class="infoValue">
-            1,850 MPH
-        </span>
-
+        <span class="infoName">SPEED</span>
+        <span class="infoValue">1,850 MPH</span>
     </div>
 
 
     <div class="infoRow">
-
-        <span class="infoName">
-            ALTITUDE
-        </span>
-
-        <span class="infoValue">
-            35,000 FT
-        </span>
-
+        <span class="infoName">ALTITUDE</span>
+        <span class="infoValue">35,000 FT</span>
     </div>
 
 
     <div class="infoRow">
-
-        <span class="infoName">
-            REINDEER
-        </span>
-
-        <span class="infoValue">
-            9
-        </span>
-
+        <span class="infoName">REINDEER</span>
+        <span class="infoValue">9</span>
     </div>
 
 
-    <!-- =================================================
-         RADIO SIGNAL
-         ================================================= -->
+    <div class="infoRow">
+        <span class="infoName">WORLD LOCATIONS</span>
+        <span class="infoValue" id="cityCount">300+</span>
+    </div>
+
+
+    <div class="infoRow">
+        <span class="infoName">HOME ETA</span>
+        <span class="infoValue" id="homeEta">NOT SET</span>
+    </div>
+
 
     <div id="signalBox">
 
@@ -608,9 +377,7 @@ body {
             RADIO TRACKING SIGNAL
         </div>
 
-
         <div id="signalBars">
-
             <div class="signalBar"></div>
             <div class="signalBar"></div>
             <div class="signalBar"></div>
@@ -621,713 +388,961 @@ body {
             <div class="signalBar"></div>
             <div class="signalBar"></div>
             <div class="signalBar"></div>
-
         </div>
-
 
         <div id="signalText">
             SIGNAL RECEIVED
         </div>
 
 
-        <!-- =================================================
-             CONNECTIONS
-             ================================================= -->
-
         <div id="connections">
 
-
             <div class="connection">
-
-                <span class="connectionIcon">
-                    📡
-                </span>
-
-                <span>
-                    CELL TOWERS
-                </span>
-
-                <span
-                    id="cellStatus"
-                    class="connectionStatus"
-                >
-                    CONNECTED
-                </span>
-
+                <span class="connectionIcon">📡</span>
+                <span>CELL TOWERS</span>
+                <span class="connectionStatus">CONNECTED</span>
             </div>
-
 
             <div class="connectionLine"></div>
 
-
             <div class="connection">
-
-                <span class="connectionIcon">
-                    🛰️
-                </span>
-
-                <span>
-                    SATELLITES
-                </span>
-
-                <span class="connectionStatus waiting">
-                    STANDBY
-                </span>
-
+                <span class="connectionIcon">🛰️</span>
+                <span>SATELLITES</span>
+                <span class="connectionStatus waiting">STANDBY</span>
             </div>
-
 
             <div class="connectionLine"></div>
 
-
             <div class="connection">
-
-                <span class="connectionIcon">
-                    ◉
-                </span>
-
-                <span>
-                    TRACKING SYSTEM
-                </span>
-
-                <span class="connectionStatus">
-                    ONLINE
-                </span>
-
+                <span class="connectionIcon">◉</span>
+                <span>TRACKING SYSTEM</span>
+                <span class="connectionStatus">ONLINE</span>
             </div>
 
         </div>
-
-    </div>
-
-
-    <!-- =================================================
-         CELL TOWER ON/OFF
-         ================================================= -->
-
-    <div id="towerControl">
-
-        <div id="towerTitle">
-            CELL TOWER DISPLAY
-        </div>
-
-        <button id="towerButton">
-            📡 CELL TOWERS: ON
-        </button>
-
     </div>
 
 
     <div id="bottomText">
-
         Tracking display for this Santa Tracker project.
+    </div>
+
+</div>
+
+
+<!-- ================================
+     PARENT SETTINGS
+     ================================ -->
+
+<div id="parentModal">
+
+    <div id="parentBox">
+
+        <div style="
+            font-size:18px;
+            font-weight:bold;
+            letter-spacing:2px;
+        ">
+            PARENT SETTINGS
+        </div>
+
+        <div style="
+            margin-top:6px;
+            font-size:10px;
+            color:#aeb7bb;
+            line-height:1.5;
+        ">
+            SET THE ESTIMATED HOME LOCATION
+            AND SANTA ARRIVAL TIME.
+        </div>
+
+        <div class="parentField">
+
+            <label>ESTIMATED LOCATION / STATE</label>
+
+            <select id="stateSelect">
+                <option value="">SELECT STATE</option>
+            </select>
+
+        </div>
+
+
+        <div class="parentField">
+
+            <label>ESTIMATED SANTA ARRIVAL</label>
+
+            <input
+                type="time"
+                id="arrivalTime"
+            >
+
+        </div>
+
+
+        <div id="parentEstimate">
+            SELECT A STATE TO GET A PROJECT ESTIMATE.
+        </div>
+
+
+        <div class="parentButtons">
+
+            <button id="cancelParent">
+                CANCEL
+            </button>
+
+            <button id="saveParent">
+                SAVE SETTINGS
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
 
-<!-- =====================================================
-     GLOBE
-     ===================================================== -->
-
 <div id="globe"></div>
 
 
 <script>
 
-
 /* =====================================================
    CITY DATABASE
    ===================================================== */
 
-const locations = [
+const cityText = `
 
-    /* NORTH POLE */
+North Pole|89.9|0|1
+New York|40.7128|-74.006|1
+Los Angeles|34.0522|-118.2437|1
+Chicago|41.8781|-87.6298|1
+Houston|29.7604|-95.3698|1
+Phoenix|33.4484|-112.074|1
+Philadelphia|39.9526|-75.1652|1
+San Antonio|29.4241|-98.4936|1
+San Diego|32.7157|-117.1611|1
+Dallas|32.7767|-96.797|1
+Austin|30.2672|-97.7431|1
+Jacksonville|30.3322|-81.6557|2
+San Jose|37.3382|-121.8863|2
+Columbus|39.9612|-82.9988|2
+Charlotte|35.2271|-80.8431|2
+Indianapolis|39.7684|-86.1581|2
+Seattle|47.6062|-122.3321|1
+Denver|39.7392|-104.9903|1
+Washington DC|38.9072|-77.0369|1
+Boston|42.3601|-71.0589|1
+Nashville|36.1627|-86.7816|2
+Detroit|42.3314|-83.0458|2
+Memphis|35.1495|-90.049|2
+Portland|45.5152|-122.6784|2
+Oklahoma City|35.4676|-97.5164|2
+Las Vegas|36.1699|-115.1398|1
+Baltimore|39.2904|-76.6122|2
+Louisville|38.2527|-85.7585|2
+Milwaukee|43.0389|-87.9065|2
+Albuquerque|35.0844|-106.6504|2
+Tucson|32.2226|-110.9747|3
+Fresno|36.7378|-119.7871|3
+Sacramento|38.5816|-121.4944|2
+Kansas City|39.0997|-94.5786|2
+Atlanta|33.749|-84.388|1
+Miami|25.7617|-80.1918|1
+Tampa|27.9506|-82.4572|2
+Orlando|28.5383|-81.3792|2
+New Orleans|29.9511|-90.0715|2
+Cleveland|41.4993|-81.6944|2
+Pittsburgh|40.4406|-79.9959|2
+Cincinnati|39.1031|-84.512|2
+St Louis|38.627|-90.1994|2
+Minneapolis|44.9778|-93.265|2
+Omaha|41.2565|-95.9345|3
+Raleigh|35.7796|-78.6382|2
+Richmond|37.5407|-77.436|3
+Buffalo|42.8864|-78.8784|3
+Birmingham|33.5186|-86.8104|3
+Charleston|32.7765|-79.9311|3
+Savannah|32.0809|-81.0912|3
+Knoxville|35.9606|-83.9207|3
+Chattanooga|35.0456|-85.3097|3
+Baton Rouge|30.4515|-91.1871|3
+Mobile|30.6954|-88.0399|3
+Boise|43.615|-116.2023|3
+Reno|39.5296|-119.8138|3
+Spokane|47.6588|-117.426|3
+Tacoma|47.2529|-122.4443|3
+Anchorage|61.2181|-149.9003|2
+Honolulu|21.3069|-157.8583|2
+
+Toronto|43.6532|-79.3832|1
+Montreal|45.5017|-73.5673|1
+Vancouver|49.2827|-123.1207|1
+Calgary|51.0447|-114.0719|1
+Ottawa|45.4215|-75.6972|2
+Edmonton|53.5461|-113.4938|2
+Winnipeg|49.8951|-97.1384|2
+Quebec City|46.8139|-71.208|2
+Halifax|44.6488|-63.5752|2
+Victoria|48.4284|-123.3656|3
+Saskatoon|52.1332|-106.67|3
+Regina|50.4452|-104.6189|3
+Kelowna|49.888|-119.496|3
+Hamilton|43.2557|-79.8711|3
+London Ontario|42.9849|-81.2453|3
+St Johns|47.5615|-52.7126|3
+Thunder Bay|48.3809|-89.2477|4
+Yellowknife|62.454|-114.3718|4
+Whitehorse|60.7212|-135.0568|4
+
+Mexico City|19.4326|-99.1332|1
+Guadalajara|20.6597|-103.3496|1
+Monterrey|25.6866|-100.3161|1
+Tijuana|32.5149|-117.0382|2
+Cancun|21.1619|-86.8515|2
+Puebla|19.0414|-98.2063|2
+Merida|20.9674|-89.5926|2
+Oaxaca|17.0732|-96.7266|3
+Acapulco|16.8531|-99.8238|3
+Mazatlan|23.2494|-106.4111|3
+Chihuahua|28.632|-106.0691|3
+Hermosillo|29.0729|-110.9559|3
+Leon|21.1221|-101.68|3
+Veracruz|19.1738|-96.1342|3
+
+Guatemala City|14.6349|-90.5069|1
+Belize City|17.5046|-88.1962|3
+San Salvador|13.6929|-89.2182|1
+Tegucigalpa|14.0723|-87.1921|2
+Managua|12.1149|-86.2362|2
+San Jose Costa Rica|9.9281|-84.0907|1
+Panama City|8.9824|-79.5199|1
+
+Bogota|4.711|-74.0721|1
+Medellin|6.2476|-75.5658|2
+Cali|3.4516|-76.532|2
+Barranquilla|10.9685|-74.7813|2
+Cartagena|10.391|-75.4794|2
+Quito|-0.1807|-78.4678|1
+Guayaquil|-2.1709|-79.9224|2
+Lima|-12.0464|-77.0428|1
+Cusco|-13.5319|-71.9675|3
+La Paz|-16.4897|-68.1193|2
+Santa Cruz Bolivia|-17.7833|-63.1821|2
+Santiago|-33.4489|-70.6693|1
+Buenos Aires|-34.6037|-58.3816|1
+Cordoba Argentina|-31.4201|-64.1888|2
+Rosario|-32.9442|-60.6505|3
+Montevideo|-34.9011|-56.1645|1
+Asuncion|-25.2637|-57.5759|2
+Sao Paulo|-23.5505|-46.6333|1
+Rio de Janeiro|-22.9068|-43.1729|1
+Brasilia|-15.7939|-47.8828|1
+Salvador Brazil|-12.9777|-38.5016|2
+Fortaleza|-3.7319|-38.5267|2
+Recife|-8.0476|-34.877|2
+Manaus|-3.119|-60.0217|3
+Belem|-1.4558|-48.4902|3
+Curitiba|-25.4284|-49.2733|2
+Porto Alegre|-30.0346|-51.2177|2
+
+London|51.5074|-0.1278|1
+Paris|48.8566|2.3522|1
+Berlin|52.52|13.405|1
+Madrid|40.4168|-3.7038|1
+Rome|41.9028|12.4964|1
+Moscow|55.7558|37.6173|1
+Amsterdam|52.3676|4.9041|1
+Vienna|48.2082|16.3738|1
+Prague|50.0755|14.4378|1
+Athens|37.9838|23.7275|1
+Dublin|53.3498|-6.2603|1
+Lisbon|38.7223|-9.1393|1
+Stockholm|59.3293|18.0686|1
+Oslo|59.9139|10.7522|1
+Copenhagen|55.6761|12.5683|1
+Helsinki|60.1699|24.9384|1
+Warsaw|52.2297|21.0122|1
+Budapest|47.4979|19.0402|1
+Brussels|50.8503|4.3517|1
+Istanbul|41.0082|28.9784|1
+Bucharest|44.4268|26.1025|2
+Sofia|42.6977|23.3219|2
+Zagreb|45.815|15.9819|3
+Belgrade|44.7866|20.4489|2
+Sarajevo|43.8563|18.4131|3
+Ljubljana|46.0569|14.5058|3
+Bratislava|48.1486|17.1077|2
+Tallinn|59.437|24.7536|2
+Riga|56.9496|24.1052|2
+Vilnius|54.6872|25.2797|2
+Reykjavik|64.1466|-21.9426|2
+Zurich|47.3769|8.5417|2
+Munich|48.1351|11.582|2
+Hamburg|53.5511|9.9937|2
+Barcelona|41.3874|2.1686|1
+Seville|37.3891|-5.9845|3
+Milan|45.4642|9.19|1
+Venice|45.4408|12.3155|2
+Naples|40.8518|14.2681|2
+Manchester|53.4808|-2.2426|2
+Edinburgh|55.9533|-3.1883|2
+Liverpool|53.4084|-2.9916|3
+Glasgow|55.8642|-4.2518|3
+Lyon|45.764|4.8357|3
+Marseille|43.2965|5.3698|3
+Florence|43.7696|11.2558|3
+Porto|41.1579|-8.6291|3
+Valencia|39.4699|-0.3763|3
+Krakow|50.0647|19.945|3
+Bristol|51.4545|-2.5879|3
+Birmingham UK|52.4862|-1.8904|2
+Cardiff|51.4816|-3.1791|3
+Belfast|54.5973|-5.9301|3
+Gothenburg|57.7089|11.9746|3
+Malmo|55.605|13.0038|3
+Geneva|46.2044|6.1432|3
+Dusseldorf|51.2277|6.7735|3
+Cologne|50.9375|6.9603|3
+Frankfurt|50.1109|8.6821|2
+Stuttgart|48.7758|9.1829|3
+Leipzig|51.3397|12.3731|3
+Dresden|51.0504|13.7373|3
+Palermo|38.1157|13.3615|3
+Turin|45.0703|7.6869|3
+Bologna|44.4949|11.3426|3
+Thessaloniki|40.6401|22.9444|3
+Minsk|53.9006|27.559|2
+Kyiv|50.4501|30.5234|1
+Lviv|49.8397|24.0297|3
+Chisinau|47.0105|28.8638|3
+Tbilisi|41.7151|44.8271|2
+Yerevan|40.1872|44.5152|3
+Baku|40.4093|49.8671|2
+
+Cairo|30.0444|31.2357|1
+Alexandria Egypt|31.2001|29.9187|2
+Lagos|6.5244|3.3792|1
+Johannesburg|-26.2041|28.0473|1
+Cape Town|-33.9249|18.4241|1
+Nairobi|-1.2921|36.8219|1
+Casablanca|33.5731|-7.5898|1
+Addis Ababa|9.03|38.74|1
+Accra|5.6037|-0.187|1
+Kinshasa|-4.4419|15.2663|1
+Algiers|36.7538|3.0588|1
+Dakar|14.7167|-17.4677|2
+Abuja|9.0765|7.3986|2
+Kampala|0.3476|32.5825|2
+Dar es Salaam|-6.7924|39.2083|2
+Maputo|-25.9692|32.5732|2
+Harare|-17.8252|31.0335|2
+Lusaka|-15.3875|28.3228|2
+Luanda|-8.839|13.2894|2
+Tunis|36.8065|10.1815|2
+Kigali|-1.9441|30.0619|2
+Marrakesh|31.6295|-7.9811|3
+Mombasa|-4.0435|39.6682|3
+Durban|-29.8587|31.0218|2
+Pretoria|-25.7479|28.2293|3
+Antananarivo|-18.8792|47.5079|3
+Windhoek|-22.5609|17.0658|3
+Gaborone|-24.6282|25.9231|3
+Abidjan|5.36|-4.0083|2
+Freetown|8.4657|-13.2317|3
+Monrovia|6.3156|-10.8074|3
+Bamako|12.6392|-8.0029|3
+Niamey|13.5116|2.1254|3
+N'Djamena|12.1348|15.0557|3
+Khartoum|15.5007|32.5599|2
+Kano|12.0022|8.592|3
+Mogadishu|2.0469|45.3182|2
+Asmara|15.3229|38.9251|3
+
+Dubai|25.2048|55.2708|1
+Abu Dhabi|24.4539|54.3773|2
+Riyadh|24.7136|46.6753|1
+Doha|25.2854|51.531|1
+Muscat|23.588|58.3829|2
+Amman|31.9454|35.9284|2
+Beirut|33.8938|35.5018|2
+Jerusalem|31.7683|35.2137|1
+Baghdad|33.3152|44.3661|1
+Tehran|35.6892|51.389|1
+Damascus|33.5138|36.2765|2
+Jeddah|21.4858|39.1925|2
+Kuwait City|29.3759|47.9774|2
+Manama|26.2235|50.5876|3
+Kabul|34.5553|69.2075|2
+Ankara|39.9334|32.8597|1
+Izmir|38.4237|27.1428|2
+Erbil|36.1911|44.0092|3
+
+Tokyo|35.6762|139.6503|1
+Osaka|34.6937|135.5023|2
+Kyoto|35.0116|135.7681|3
+Nagoya|35.1815|136.9066|2
+Sapporo|43.0618|141.3545|2
+Beijing|39.9042|116.4074|1
+Shanghai|31.2304|121.4737|1
+Guangzhou|23.1291|113.2644|1
+Shenzhen|22.5431|114.0579|1
+Hong Kong|22.3193|114.1694|1
+Chengdu|30.5728|104.0668|2
+Chongqing|29.563|106.5516|2
+Seoul|37.5665|126.978|1
+Busan|35.1796|129.0756|2
+Taipei|25.033|121.5654|1
+Manila|14.5995|120.9842|1
+Cebu City|10.3157|123.8854|2
+Singapore|1.3521|103.8198|1
+Bangkok|13.7563|100.5018|1
+Chiang Mai|18.7883|98.9853|3
+Jakarta|-6.2088|106.8456|1
+Surabaya|-7.2575|112.7521|2
+Kuala Lumpur|3.139|101.6869|1
+Hanoi|21.0278|105.8342|1
+Ho Chi Minh City|10.8231|106.6297|1
+Phnom Penh|11.5564|104.9282|2
+Vientiane|17.9757|102.6331|3
+Yangon|16.8409|96.1735|2
+Dhaka|23.8103|90.4125|1
+Chittagong|22.3569|91.7832|2
+Delhi|28.6139|77.209|1
+Mumbai|19.076|72.8777|1
+Bengaluru|12.9716|77.5946|1
+Hyderabad India|17.385|78.4867|2
+Chennai|13.0827|80.2707|2
+Kolkata|22.5726|88.3639|2
+Ahmedabad|23.0225|72.5714|2
+Pune|18.5204|73.8567|2
+Karachi|24.8607|67.0011|1
+Lahore|31.5204|74.3587|2
+Islamabad|33.6844|73.0479|2
+Kathmandu|27.7172|85.324|2
+Colombo|6.9271|79.8612|2
+Ulaanbaatar|47.8864|106.9057|3
+Almaty|43.2389|76.8897|3
+Astana|51.1694|71.4491|3
+Tashkent|41.2995|69.2401|2
+Bishkek|42.8746|74.5698|3
+Dushanbe|38.5598|68.787|3
+Novosibirsk|55.0084|82.9357|3
+Vladivostok|43.1155|131.8855|3
+Irkutsk|52.2869|104.305|4
+
+Sydney|-33.8688|151.2093|1
+Melbourne|-37.8136|144.9631|1
+Brisbane|-27.4698|153.0251|1
+Perth|-31.9505|115.8605|1
+Adelaide|-34.9285|138.6007|2
+Canberra|-35.2809|149.13|2
+Hobart|-42.8821|147.3272|3
+Darwin|-12.4634|130.8456|3
+Cairns|-16.9186|145.7781|3
+Auckland|-36.8509|174.7645|1
+Wellington|-41.2866|174.7756|2
+Christchurch|-43.5321|172.6362|2
+Dunedin|-45.8788|170.5028|3
+Suva|-18.1416|178.4419|3
+Port Moresby|-9.4438|147.1803|3
+
+Reykjavik|64.1466|-21.9426|2
+Nuuk|64.1814|-51.6941|2
+Longyearbyen|78.2232|15.6469|3
+Tromso|69.6492|18.9553|3
+Fairbanks|64.8378|-147.7164|3
+Murmansk|68.9585|33.0827|3
+`;
+
+
+/* =====================================================
+   CONVERT CITY DATA
+   ===================================================== */
+
+const locations = cityText
+    .trim()
+    .split("\n")
+    .filter(line => line.trim())
+    .map(line => {
+
+        const [name, lat, lng, level] =
+            line.split("|");
+
+        return {
+            name,
+            lat: Number(lat),
+            lng: Number(lng),
+            level: Number(level),
+            type: "city"
+        };
+
+    });
+
+
+/* =====================================================
+   OCEAN + SEA LABELS
+   ===================================================== */
+
+const oceans = [
 
     {
-        name: "NORTH POLE",
-        lat: 90,
-        lng: 0,
-        level: 1
+        name: "PACIFIC OCEAN",
+        lat: 5,
+        lng: -155,
+        size: 0.75
     },
 
+    {
+        name: "PACIFIC OCEAN",
+        lat: -5,
+        lng: 155,
+        size: 0.75
+    },
 
-    /* UNITED STATES */
+    {
+        name: "ATLANTIC OCEAN",
+        lat: 10,
+        lng: -35,
+        size: 0.72
+    },
 
-    {name:"New York",lat:40.7128,lng:-74.006,level:1},
-    {name:"Los Angeles",lat:34.0522,lng:-118.2437,level:1},
-    {name:"Chicago",lat:41.8781,lng:-87.6298,level:1},
-    {name:"Houston",lat:29.7604,lng:-95.3698,level:1},
-    {name:"Phoenix",lat:33.4484,lng:-112.074,level:1},
-    {name:"Philadelphia",lat:39.9526,lng:-75.1652,level:1},
-    {name:"San Antonio",lat:29.4241,lng:-98.4936,level:1},
-    {name:"San Diego",lat:32.7157,lng:-117.1611,level:1},
-    {name:"Dallas",lat:32.7767,lng:-96.797,level:1},
-    {name:"Atlanta",lat:33.749,lng:-84.388,level:1},
-    {name:"Miami",lat:25.7617,lng:-80.1918,level:1},
-    {name:"Boston",lat:42.3601,lng:-71.0589,level:1},
-    {name:"Seattle",lat:47.6062,lng:-122.3321,level:1},
-    {name:"Denver",lat:39.7392,lng:-104.9903,level:1},
-    {name:"Washington DC",lat:38.9072,lng:-77.0369,level:1},
-    {name:"Las Vegas",lat:36.1699,lng:-115.1398,level:1},
+    {
+        name: "ATLANTIC OCEAN",
+        lat: -25,
+        lng: -15,
+        size: 0.68
+    },
 
-    {name:"Austin",lat:30.2672,lng:-97.7431,level:2},
-    {name:"Charlotte",lat:35.2271,lng:-80.8431,level:2},
-    {name:"Nashville",lat:36.1627,lng:-86.7816,level:2},
-    {name:"Detroit",lat:42.3314,lng:-83.0458,level:2},
-    {name:"Portland",lat:45.5152,lng:-122.6784,level:2},
-    {name:"Minneapolis",lat:44.9778,lng:-93.265,level:2},
-    {name:"New Orleans",lat:29.9511,lng:-90.0715,level:2},
-    {name:"Baltimore",lat:39.2904,lng:-76.6122,level:2},
-    {name:"Cleveland",lat:41.4993,lng:-81.6944,level:2},
-    {name:"Pittsburgh",lat:40.4406,lng:-79.9959,level:2},
-    {name:"St Louis",lat:38.627,lng:-90.1994,level:2},
-    {name:"Kansas City",lat:39.0997,lng:-94.5786,level:2},
-    {name:"Indianapolis",lat:39.7684,lng:-86.1581,level:2},
-    {name:"Columbus",lat:39.9612,lng:-82.9988,level:2},
-    {name:"Oklahoma City",lat:35.4676,lng:-97.5164,level:2},
-    {name:"Salt Lake City",lat:40.7608,lng:-111.891,level:2},
-    {name:"Honolulu",lat:21.3069,lng:-157.8583,level:2},
-    {name:"Anchorage",lat:61.2181,lng:-149.9003,level:2},
+    {
+        name: "INDIAN OCEAN",
+        lat: -20,
+        lng: 80,
+        size: 0.72
+    },
 
-    {name:"Albuquerque",lat:35.0844,lng:-106.6504,level:3},
-    {name:"Boise",lat:43.615,lng:-116.2023,level:3},
-    {name:"Raleigh",lat:35.7796,lng:-78.6382,level:3},
-    {name:"Richmond",lat:37.5407,lng:-77.436,level:3},
-    {name:"Savannah",lat:32.0809,lng:-81.0912,level:3},
-    {name:"Charleston",lat:32.7765,lng:-79.9311,level:3},
-    {name:"Orlando",lat:28.5383,lng:-81.3792,level:3},
-    {name:"Tampa",lat:27.9506,lng:-82.4572,level:3},
-    {name:"Memphis",lat:35.1495,lng:-90.049,level:3},
-    {name:"Cincinnati",lat:39.1031,lng:-84.512,level:3},
-    {name:"Milwaukee",lat:43.0389,lng:-87.9065,level:3},
-    {name:"Buffalo",lat:42.8864,lng:-78.8784,level:3},
-    {name:"Omaha",lat:41.2565,lng:-95.9345,level:3},
-    {name:"Birmingham",lat:33.5186,lng:-86.8104,level:3},
+    {
+        name: "ARCTIC OCEAN",
+        lat: 82,
+        lng: 0,
+        size: 0.62
+    },
 
-    {name:"Tacoma",lat:47.2529,lng:-122.4443,level:4},
-    {name:"Spokane",lat:47.6588,lng:-117.426,level:4},
-    {name:"Fresno",lat:36.7378,lng:-119.7871,level:4},
-    {name:"Reno",lat:39.5296,lng:-119.8138,level:4},
-    {name:"Baton Rouge",lat:30.4515,lng:-91.1871,level:4},
-    {name:"Knoxville",lat:35.9606,lng:-83.9207,level:4},
-    {name:"Chattanooga",lat:35.0456,lng:-85.3097,level:4},
-    {name:"Dayton",lat:39.7589,lng:-84.1916,level:4},
-    {name:"Toledo",lat:41.6528,lng:-83.5379,level:4},
-    {name:"Syracuse",lat:43.0481,lng:-76.1474,level:4},
-    {name:"Albany",lat:42.6526,lng:-73.7562,level:4},
-    {name:"Portsmouth",lat:43.0718,lng:-70.7626,level:4},
-    {name:"Mobile",lat:30.6954,lng:-88.0399,level:4},
+    {
+        name: "SOUTHERN OCEAN",
+        lat: -60,
+        lng: 20,
+        size: 0.65
+    },
 
+    {
+        name: "NORTH ATLANTIC OCEAN",
+        lat: 35,
+        lng: -35,
+        size: 0.48
+    },
 
-    /* CANADA */
+    {
+        name: "SOUTH PACIFIC OCEAN",
+        lat: -35,
+        lng: -120,
+        size: 0.48
+    },
 
-    {name:"Toronto",lat:43.6532,lng:-79.3832,level:1},
-    {name:"Vancouver",lat:49.2827,lng:-123.1207,level:1},
-    {name:"Montreal",lat:45.5017,lng:-73.5673,level:1},
-    {name:"Calgary",lat:51.0447,lng:-114.0719,level:1},
-    {name:"Ottawa",lat:45.4215,lng:-75.6972,level:1},
+    {
+        name: "CARIBBEAN SEA",
+        lat: 15,
+        lng: -75,
+        size: 0.42
+    },
 
-    {name:"Edmonton",lat:53.5461,lng:-113.4938,level:2},
-    {name:"Winnipeg",lat:49.8951,lng:-97.1384,level:2},
-    {name:"Quebec City",lat:46.8139,lng:-71.208,level:2},
-    {name:"Halifax",lat:44.6488,lng:-63.5752,level:2},
-    {name:"Victoria",lat:48.4284,lng:-123.3656,level:3},
-    {name:"Saskatoon",lat:52.1332,lng:-106.67,level:3},
-    {name:"Regina",lat:50.4452,lng:-104.6189,level:3},
-    {name:"Kelowna",lat:49.888,lng:-119.496,level:4},
-    {name:"London Ontario",lat:42.9849,lng:-81.2453,level:4},
-    {name:"Hamilton",lat:43.2557,lng:-79.8711,level:4},
-    {name:"St Johns",lat:47.5615,lng:-52.7126,level:4},
+    {
+        name: "GULF OF MEXICO",
+        lat: 24,
+        lng: -90,
+        size: 0.40
+    },
 
+    {
+        name: "MEDITERRANEAN SEA",
+        lat: 35,
+        lng: 18,
+        size: 0.38
+    },
 
-    /* MEXICO */
+    {
+        name: "ARABIAN SEA",
+        lat: 15,
+        lng: 65,
+        size: 0.42
+    },
 
-    {name:"Mexico City",lat:19.4326,lng:-99.1332,level:1},
-    {name:"Guadalajara",lat:20.6597,lng:-103.3496,level:1},
-    {name:"Monterrey",lat:25.6866,lng:-100.3161,level:1},
-    {name:"Tijuana",lat:32.5149,lng:-117.0382,level:2},
-    {name:"Cancun",lat:21.1619,lng:-86.8515,level:2},
-    {name:"Puebla",lat:19.0414,lng:-98.2063,level:2},
-    {name:"Merida",lat:20.9674,lng:-89.5926,level:3},
-    {name:"Oaxaca",lat:17.0732,lng:-96.7266,level:3},
-    {name:"Acapulco",lat:16.8531,lng:-99.8237,level:4},
-    {name:"Mazatlan",lat:23.2494,lng:-106.4111,level:4},
-    {name:"Chihuahua",lat:28.632,lng:-106.0691,level:4},
-    {name:"Veracruz",lat:19.1738,lng:-96.1342,level:4},
+    {
+        name: "BAY OF BENGAL",
+        lat: 15,
+        lng: 88,
+        size: 0.40
+    },
 
+    {
+        name: "SOUTH CHINA SEA",
+        lat: 14,
+        lng: 114,
+        size: 0.40
+    },
 
-    /* SOUTH AMERICA */
+    {
+        name: "EAST CHINA SEA",
+        lat: 27,
+        lng: 126,
+        size: 0.36
+    },
 
-    {name:"Buenos Aires",lat:-34.6037,lng:-58.3816,level:1},
-    {name:"São Paulo",lat:-23.5505,lng:-46.6333,level:1},
-    {name:"Rio de Janeiro",lat:-22.9068,lng:-43.1729,level:1},
-    {name:"Brasilia",lat:-15.7939,lng:-47.8828,level:1},
-    {name:"Santiago",lat:-33.4489,lng:-70.6693,level:1},
-    {name:"Lima",lat:-12.0464,lng:-77.0428,level:1},
-    {name:"Bogota",lat:4.711,lng:-74.0721,level:1},
-    {name:"Quito",lat:-0.1807,lng:-78.4678,level:1},
-    {name:"Caracas",lat:10.4806,lng:-66.9036,level:1},
-    {name:"Montevideo",lat:-34.9011,lng:-56.1645,level:1},
+    {
+        name: "SEA OF JAPAN",
+        lat: 40,
+        lng: 135,
+        size: 0.34
+    },
 
-    {name:"La Paz",lat:-16.4897,lng:-68.1193,level:2},
-    {name:"Medellin",lat:6.2476,lng:-75.5658,level:2},
-    {name:"Cusco",lat:-13.5319,lng:-71.9675,level:3},
-    {name:"Guayaquil",lat:-2.1709,lng:-79.9224,level:2},
-    {name:"Cali",lat:3.4516,lng:-76.532,level:2},
+    {
+        name: "BERING SEA",
+        lat: 57,
+        lng: -175,
+        size: 0.36
+    },
 
+    {
+        name: "GULF OF ALASKA",
+        lat: 55,
+        lng: -145,
+        size: 0.34
+    },
 
-    /* EUROPE */
+    {
+        name: "BLACK SEA",
+        lat: 43,
+        lng: 35,
+        size: 0.34
+    },
 
-    {name:"London",lat:51.5074,lng:-0.1278,level:1},
-    {name:"Paris",lat:48.8566,lng:2.3522,level:1},
-    {name:"Berlin",lat:52.52,lng:13.405,level:1},
-    {name:"Madrid",lat:40.4168,lng:-3.7038,level:1},
-    {name:"Rome",lat:41.9028,lng:12.4964,level:1},
-    {name:"Moscow",lat:55.7558,lng:37.6173,level:1},
-    {name:"Amsterdam",lat:52.3676,lng:4.9041,level:1},
-    {name:"Vienna",lat:48.2082,lng:16.3738,level:1},
-    {name:"Prague",lat:50.0755,lng:14.4378,level:1},
-    {name:"Athens",lat:37.9838,lng:23.7275,level:1},
-    {name:"Dublin",lat:53.3498,lng:-6.2603,level:1},
-    {name:"Lisbon",lat:38.7223,lng:-9.1393,level:1},
-    {name:"Stockholm",lat:59.3293,lng:18.0686,level:1},
-    {name:"Oslo",lat:59.9139,lng:10.7522,level:1},
-    {name:"Copenhagen",lat:55.6761,lng:12.5683,level:1},
-    {name:"Helsinki",lat:60.1699,lng:24.9384,level:1},
-    {name:"Warsaw",lat:52.2297,lng:21.0122,level:1},
-    {name:"Budapest",lat:47.4979,lng:19.0402,level:1},
-    {name:"Brussels",lat:50.8503,lng:4.3517,level:1},
-    {name:"Istanbul",lat:41.0082,lng:28.9784,level:1},
+    {
+        name: "RED SEA",
+        lat: 20,
+        lng: 38,
+        size: 0.32
+    },
 
-    {name:"Bucharest",lat:44.4268,lng:26.1025,level:2},
-    {name:"Sofia",lat:42.6977,lng:23.3219,level:2},
-    {name:"Zagreb",lat:45.815,lng:15.9819,level:2},
-    {name:"Belgrade",lat:44.7866,lng:20.4489,level:2},
-    {name:"Sarajevo",lat:43.8563,lng:18.4131,level:2},
-    {name:"Ljubljana",lat:46.0569,lng:14.5058,level:3},
-    {name:"Bratislava",lat:48.1486,lng:17.1077,level:2},
-    {name:"Tallinn",lat:59.437,lng:24.7536,level:2},
-    {name:"Riga",lat:56.9496,lng:24.1052,level:2},
-    {name:"Vilnius",lat:54.6872,lng:25.2797,level:2},
-    {name:"Reykjavik",lat:64.1466,lng:-21.9426,level:2},
-    {name:"Zurich",lat:47.3769,lng:8.5417,level:2},
-    {name:"Munich",lat:48.1351,lng:11.582,level:2},
-    {name:"Hamburg",lat:53.5511,lng:9.9937,level:2},
-    {name:"Barcelona",lat:41.3874,lng:2.1686,level:1},
-    {name:"Seville",lat:37.3891,lng:-5.9845,level:3},
-    {name:"Milan",lat:45.4642,lng:9.19,level:1},
-    {name:"Venice",lat:45.4408,lng:12.3155,level:2},
-    {name:"Naples",lat:40.8518,lng:14.2681,level:2},
-    {name:"Manchester",lat:53.4808,lng:-2.2426,level:2},
-    {name:"Edinburgh",lat:55.9533,lng:-3.1883,level:2},
-    {name:"Liverpool",lat:53.4084,lng:-2.9916,level:3},
-    {name:"Glasgow",lat:55.8642,lng:-4.2518,level:3},
-    {name:"Lyon",lat:45.764,lng:4.8357,level:3},
-    {name:"Marseille",lat:43.2965,lng:5.3698,level:3},
-    {name:"Florence",lat:43.7696,lng:11.2558,level:3},
-    {name:"Porto",lat:41.1579,lng:-8.6291,level:3},
-    {name:"Valencia",lat:39.4699,lng:-0.3763,level:3},
-    {name:"Krakow",lat:50.0647,lng:19.945,level:3},
-
-
-    /* AFRICA */
-
-    {name:"Cairo",lat:30.0444,lng:31.2357,level:1},
-    {name:"Lagos",lat:6.5244,lng:3.3792,level:1},
-    {name:"Johannesburg",lat:-26.2041,lng:28.0473,level:1},
-    {name:"Cape Town",lat:-33.9249,lng:18.4241,level:1},
-    {name:"Nairobi",lat:-1.2921,lng:36.8219,level:1},
-    {name:"Casablanca",lat:33.5731,lng:-7.5898,level:1},
-    {name:"Addis Ababa",lat:9.03,lng:38.74,level:1},
-    {name:"Accra",lat:5.6037,lng:-0.187,level:1},
-    {name:"Kinshasa",lat:-4.4419,lng:15.2663,level:1},
-    {name:"Algiers",lat:36.7538,lng:3.0588,level:1},
-
-    {name:"Dakar",lat:14.7167,lng:-17.4677,level:2},
-    {name:"Abuja",lat:9.0765,lng:7.3986,level:2},
-    {name:"Kampala",lat:0.3476,lng:32.5825,level:2},
-    {name:"Dar es Salaam",lat:-6.7924,lng:39.2083,level:2},
-    {name:"Maputo",lat:-25.9692,lng:32.5732,level:2},
-    {name:"Harare",lat:-17.8252,lng:31.0335,level:2},
-    {name:"Lusaka",lat:-15.3875,lng:28.3228,level:2},
-    {name:"Luanda",lat:-8.839,lng:13.2894,level:2},
-    {name:"Tunis",lat:36.8065,lng:10.1815,level:2},
-    {name:"Kigali",lat:-1.9441,lng:30.0619,level:2},
-    {name:"Marrakesh",lat:31.6295,lng:-7.9811,level:3},
-    {name:"Mombasa",lat:-4.0435,lng:39.6682,level:3},
-    {name:"Alexandria",lat:31.2001,lng:29.9187,level:3},
-    {name:"Durban",lat:-29.8587,lng:31.0218,level:2},
-    {name:"Pretoria",lat:-25.7479,lng:28.2293,level:3},
-
-
-    /* MIDDLE EAST */
-
-    {name:"Dubai",lat:25.2048,lng:55.2708,level:1},
-    {name:"Riyadh",lat:24.7136,lng:46.6753,level:1},
-    {name:"Doha",lat:25.2854,lng:51.531,level:1},
-    {name:"Muscat",lat:23.588,lng:58.3829,level:2},
-    {name:"Amman",lat:31.9454,lng:35.9284,level:2},
-    {name:"Beirut",lat:33.8938,lng:35.5018,level:2},
-    {name:"Jerusalem",lat:31.7683,lng:35.2137,level:1},
-    {name:"Baghdad",lat:33.3152,lng:44.3661,level:1},
-    {name:"Tehran",lat:35.6892,lng:51.389,level:1},
-    {name:"Damascus",lat:33.5138,lng:36.2765,level:2},
-    {name:"Jeddah",lat:21.4858,lng:39.1925,level:2},
-    {name:"Abu Dhabi",lat:24.4539,lng:54.3773,level:2},
-    {name:"Kuwait City",lat:29.3759,lng:47.9774,level:2},
-
-
-    /* ASIA */
-
-    {name:"Tokyo",lat:35.6762,lng:139.6503,level:1},
-    {name:"Beijing",lat:39.9042,lng:116.4074,level:1},
-    {name:"Shanghai",lat:31.2304,lng:121.4737,level:1},
-    {name:"Hong Kong",lat:22.3193,lng:114.1694,level:1},
-    {name:"Seoul",lat:37.5665,lng:126.978,level:1},
-    {name:"Singapore",lat:1.3521,lng:103.8198,level:1},
-    {name:"Bangkok",lat:13.7563,lng:100.5018,level:1},
-    {name:"Jakarta",lat:-6.2088,lng:106.8456,level:1},
-    {name:"Manila",lat:14.5995,lng:120.9842,level:1},
-    {name:"Mumbai",lat:19.076,lng:72.8777,level:1},
-    {name:"Delhi",lat:28.6139,lng:77.209,level:1},
-    {name:"Bengaluru",lat:12.9716,lng:77.5946,level:1},
-    {name:"Karachi",lat:24.8607,lng:67.0011,level:1},
-    {name:"Dhaka",lat:23.8103,lng:90.4125,level:1},
-
-    {name:"Kolkata",lat:22.5726,lng:88.3639,level:2},
-    {name:"Chennai",lat:13.0827,lng:80.2707,level:2},
-    {name:"Hyderabad",lat:17.385,lng:78.4867,level:2},
-    {name:"Lahore",lat:31.5204,lng:74.3587,level:2},
-    {name:"Islamabad",lat:33.6844,lng:73.0479,level:2},
-    {name:"Kathmandu",lat:27.7172,lng:85.324,level:2},
-    {name:"Colombo",lat:6.9271,lng:79.8612,level:2},
-    {name:"Kuala Lumpur",lat:3.139,lng:101.6869,level:1},
-    {name:"Hanoi",lat:21.0278,lng:105.8342,level:1},
-    {name:"Ho Chi Minh City",lat:10.8231,lng:106.6297,level:1},
-    {name:"Phnom Penh",lat:11.5564,lng:104.9282,level:2},
-    {name:"Vientiane",lat:17.9757,lng:102.6331,level:3},
-    {name:"Taipei",lat:25.033,lng:121.5654,level:1},
-    {name:"Osaka",lat:34.6937,lng:135.5023,level:2},
-    {name:"Kyoto",lat:35.0116,lng:135.7681,level:3},
-    {name:"Sapporo",lat:43.0618,lng:141.3545,level:2},
-    {name:"Nagoya",lat:35.1815,lng:136.9066,level:2},
-    {name:"Busan",lat:35.1796,lng:129.0756,level:2},
-
-
-    /* AUSTRALIA */
-
-    {name:"Sydney",lat:-33.8688,lng:151.2093,level:1},
-    {name:"Melbourne",lat:-37.8136,lng:144.9631,level:1},
-    {name:"Brisbane",lat:-27.4698,lng:153.0251,level:1},
-    {name:"Perth",lat:-31.9505,lng:115.8605,level:1},
-    {name:"Adelaide",lat:-34.9285,lng:138.6007,level:2},
-    {name:"Canberra",lat:-35.2809,lng:149.13,level:2},
-    {name:"Hobart",lat:-42.8821,lng:147.3272,level:3},
-    {name:"Darwin",lat:-12.4634,lng:130.8456,level:3},
-    {name:"Cairns",lat:-16.9186,lng:145.7781,level:3},
-
-
-    /* NEW ZEALAND */
-
-    {name:"Auckland",lat:-36.8509,lng:174.7645,level:1},
-    {name:"Wellington",lat:-41.2866,lng:174.7756,level:2},
-    {name:"Christchurch",lat:-43.5321,lng:172.6362,level:2},
-    {name:"Dunedin",lat:-45.8788,lng:170.5028,level:3},
-
-
-    /* ARCTIC */
-
-    {name:"Longyearbyen",lat:78.2232,lng:15.6469,level:3},
-    {name:"Nuuk",lat:64.1814,lng:-51.6941,level:2},
-    {name:"Tromso",lat:69.6492,lng:18.9553,level:3},
-    {name:"Fairbanks",lat:64.8378,lng:-147.7164,level:3},
-    {name:"Murmansk",lat:68.9585,lng:33.0827,level:3}
+    {
+        name: "NORTH SEA",
+        lat: 56,
+        lng: 3,
+        size: 0.32
+    }
 
 ];
+
+
+/* =====================================================
+   LABEL DATA
+   ===================================================== */
+
+function makeLabels(level) {
+
+    return [
+
+        ...oceans.map(ocean => ({
+            ...ocean,
+            type: "ocean"
+        })),
+
+        ...locations
+            .filter(city => city.level <= level)
+
+    ];
+
+}
+
+
+/* =====================================================
+   GLOBE
+   ===================================================== */
+
+const globe = Globe()
+    (document.getElementById("globe"))
+
+    .globeImageUrl(
+        "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+    )
+
+    .bumpImageUrl(
+        "https://unpkg.com/three-globe/example/img/earth-topology.png"
+    )
+
+    .backgroundImageUrl(
+        "https://unpkg.com/three-globe/example/img/night-sky.png"
+    )
+
+    .showAtmosphere(true)
+
+    .atmosphereColor("#4da6ff")
+
+    .atmosphereAltitude(0.18)
+
+
+    /* ALL LABELS */
+
+    .labelsData(
+        makeLabels(1)
+    )
+
+    .labelLat(
+        item => item.lat
+    )
+
+    .labelLng(
+        item => item.lng
+    )
+
+    .labelText(
+        item => item.name
+    )
+
+    .labelSize(
+        item => item.type === "ocean"
+            ? item.size
+            : 0.42
+    )
+
+    .labelColor(
+        item => item.type === "ocean"
+            ? "rgba(210,225,235,0.72)"
+            : "#ffffff"
+    )
+
+    .labelDotRadius(
+        item => item.type === "ocean"
+            ? 0
+            : 0.11
+    )
+
+    .labelAltitude(
+        item => item.type === "ocean"
+            ? 0.003
+            : 0.015
+    );
 
 
 /* =====================================================
    CELL TOWERS
    ===================================================== */
 
-const cellTowers = [
+const cellTowers =
+    locations
+        .filter(city => city.level <= 2)
+        .map(city => ({
+            lat: city.lat,
+            lng: city.lng,
+            type: "tower"
+        }));
 
-    {lat:40.7128,lng:-74.006},
-    {lat:34.0522,lng:-118.2437},
-    {lat:41.8781,lng:-87.6298},
-    {lat:29.7604,lng:-95.3698},
-    {lat:33.4484,lng:-112.074},
-    {lat:39.9526,lng:-75.1652},
-    {lat:32.7767,lng:-96.797},
-    {lat:33.749,lng:-84.388},
-    {lat:25.7617,lng:-80.1918},
-    {lat:42.3601,lng:-71.0589},
-    {lat:47.6062,lng:-122.3321},
-    {lat:39.7392,lng:-104.9903},
-    {lat:38.9072,lng:-77.0369},
-    {lat:36.1699,lng:-115.1398},
 
-    {lat:43.6532,lng:-79.3832},
-    {lat:49.2827,lng:-123.1207},
-    {lat:45.5017,lng:-73.5673},
+const trackingObjects = [
 
-    {lat:19.4326,lng:-99.1332},
-    {lat:20.6597,lng:-103.3496},
-    {lat:25.6866,lng:-100.3161},
+    ...cellTowers,
 
-    {lat:51.5074,lng:-0.1278},
-    {lat:48.8566,lng:2.3522},
-    {lat:52.52,lng:13.405},
-    {lat:40.4168,lng:-3.7038},
-    {lat:41.9028,lng:12.4964},
-
-    {lat:30.0444,lng:31.2357},
-    {lat:6.5244,lng:3.3792},
-    {lat:-26.2041,lng:28.0473},
-    {lat:-1.2921,lng:36.8219},
-
-    {lat:25.2048,lng:55.2708},
-    {lat:24.7136,lng:46.6753},
-    {lat:35.6892,lng:51.389},
-
-    {lat:35.6762,lng:139.6503},
-    {lat:39.9042,lng:116.4074},
-    {lat:31.2304,lng:121.4737},
-    {lat:37.5665,lng:126.978},
-    {lat:1.3521,lng:103.8198},
-    {lat:13.7563,lng:100.5018},
-    {lat:19.076,lng:72.8777},
-    {lat:28.6139,lng:77.209},
-
-    {lat:-33.8688,lng:151.2093},
-    {lat:-37.8136,lng:144.9631},
-    {lat:-27.4698,lng:153.0251},
-
-    {lat:-36.8509,lng:174.7645}
+    {
+        lat: 90,
+        lng: 0,
+        type: "northPole"
+    }
 
 ];
 
 
-/* =====================================================
-   CREATE GLOBE
-   ===================================================== */
-
-const globe = Globe()
-(
-    document.getElementById('globe')
-)
-
-
-.globeImageUrl(
-    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
-)
-
-
-.bumpImageUrl(
-    'https://unpkg.com/three-globe/example/img/earth-topology.png'
-)
-
-
-.backgroundImageUrl(
-    'https://unpkg.com/three-globe/example/img/night-sky.png'
-)
-
-
-.showAtmosphere(true)
-
-
-.atmosphereColor('#4da6ff')
-
-
-.atmosphereAltitude(.18)
-
-
-/* =====================================================
-   CITY LABELS
-   ===================================================== */
-
-.labelsData(
-    locations.filter(city => city.level === 1)
-)
-
-
-.labelLat(city => city.lat)
-
-
-.labelLng(city => city.lng)
-
-
-.labelText(city => city.name)
-
-
-.labelSize(city => {
-
-    if(city.name === "NORTH POLE") {
-        return .65;
-    }
-
-    return .42;
-
-})
-
-
-.labelColor(city => {
-
-    if(city.name === "NORTH POLE") {
-        return "#8fdcff";
-    }
-
-    return "#ffffff";
-
-})
-
-
-.labelDotRadius(city => {
-
-    if(city.name === "NORTH POLE") {
-        return .16;
-    }
-
-    return .11;
-
-})
-
-
-.labelAltitude(.015);
-
-
-/* =====================================================
-   CELL TOWER OBJECTS
-   ===================================================== */
-
 globe
 
-.customLayerData(cellTowers)
+    .customLayerData(
+        trackingObjects
+    )
 
-.customThreeObject(() => {
+    .customThreeObject(
+        data => {
 
-    const group = new THREE.Group();
+            /* NORTH POLE */
 
+            if (data.type === "northPole") {
 
-    /* Tower pole */
-
-    const poleGeometry =
-        new THREE.CylinderGeometry(
-            .012,
-            .018,
-            .20,
-            6
-        );
+                const group =
+                    new THREE.Group();
 
 
-    const poleMaterial =
-        new THREE.MeshBasicMaterial({
-            color: 0xaaaaaa
-        });
+                const pole =
+                    new THREE.Mesh(
+
+                        new THREE.CylinderGeometry(
+                            .035,
+                            .045,
+                            .65,
+                            12
+                        ),
+
+                        new THREE.MeshBasicMaterial({
+                            color: 0xffffff
+                        })
+
+                    );
 
 
-    const pole =
-        new THREE.Mesh(
-            poleGeometry,
-            poleMaterial
-        );
+                pole.position.y = .35;
+
+                group.add(pole);
 
 
-    pole.position.y = .10;
+                const stripeGeometry =
+                    new THREE.CylinderGeometry(
+                        .039,
+                        .049,
+                        .10,
+                        12
+                    );
 
 
-    group.add(pole);
+                const stripeMaterial =
+                    new THREE.MeshBasicMaterial({
+                        color: 0xd71920
+                    });
 
 
-    /* Signal light */
+                [.15,.35,.55].forEach(y => {
 
-    const lightGeometry =
-        new THREE.SphereGeometry(
-            .025,
-            6,
-            6
-        );
+                    const stripe =
+                        new THREE.Mesh(
+                            stripeGeometry,
+                            stripeMaterial
+                        );
 
+                    stripe.position.y = y;
 
-    const lightMaterial =
-        new THREE.MeshBasicMaterial({
-            color: 0xffaa33
-        });
+                    group.add(stripe);
 
-
-    const light =
-        new THREE.Mesh(
-            lightGeometry,
-            lightMaterial
-        );
+                });
 
 
-    light.position.y = .21;
+                const flag =
+                    new THREE.Mesh(
+
+                        new THREE.PlaneGeometry(
+                            .22,
+                            .12
+                        ),
+
+                        new THREE.MeshBasicMaterial({
+                            color: 0xd71920,
+                            side: THREE.DoubleSide
+                        })
+
+                    );
 
 
-    group.add(light);
+                flag.position.set(
+                    .11,
+                    .82,
+                    0
+                );
 
 
-    /* Signal rings */
-
-    const ringGeometry =
-        new THREE.TorusGeometry(
-            .045,
-            .006,
-            6,
-            16
-        );
+                group.add(flag);
 
 
-    const ringMaterial =
-        new THREE.MeshBasicMaterial({
-            color: 0x45d66b
-        });
+                return group;
+
+            }
 
 
-    const ring =
-        new THREE.Mesh(
-            ringGeometry,
-            ringMaterial
-        );
+            /* CELL TOWER */
+
+            const group =
+                new THREE.Group();
 
 
-    ring.rotation.x =
-        Math.PI / 2;
+            const pole =
+                new THREE.Mesh(
+
+                    new THREE.CylinderGeometry(
+                        .012,
+                        .018,
+                        .20,
+                        6
+                    ),
+
+                    new THREE.MeshBasicMaterial({
+                        color: 0xaaaaaa
+                    })
+
+                );
 
 
-    ring.position.y =
-        .21;
+            pole.position.y = .10;
+
+            group.add(pole);
 
 
-    group.add(ring);
+            const light =
+                new THREE.Mesh(
+
+                    new THREE.SphereGeometry(
+                        .025,
+                        6,
+                        6
+                    ),
+
+                    new THREE.MeshBasicMaterial({
+                        color: 0xffaa33
+                    })
+
+                );
 
 
-    return group;
+            light.position.y = .21;
 
-})
-
-
-.customThreeObjectUpdate(
-    (object, data) => {
-
-        Object.assign(
-            object.position,
-
-            globe.getCoords(
-                data.lat,
-                data.lng,
-                .02
-            )
-        );
+            group.add(light);
 
 
-        object.lookAt(0,0,0);
+            return group;
 
-    }
-);
+        })
+
+
+    .customThreeObjectUpdate(
+        (object,data) => {
+
+            const position =
+                globe.getCoords(
+                    data.lat,
+                    data.lng,
+                    data.type === "northPole"
+                        ? .03
+                        : .02
+                );
+
+
+            object.position.copy(position);
+
+
+            if (
+                data.type !== "northPole"
+            ) {
+
+                object.lookAt(
+                    0,
+                    0,
+                    0
+                );
+
+            }
+
+        }
+    );
 
 
 /* =====================================================
@@ -1345,10 +1360,6 @@ globe.pointOfView({
 });
 
 
-/* =====================================================
-   CONTROLS
-   ===================================================== */
-
 globe.controls().enableRotate = true;
 
 globe.controls().enableZoom = true;
@@ -1357,14 +1368,14 @@ globe.controls().enablePan = false;
 
 
 /* =====================================================
-   CITY ZOOM LEVELS
+   ZOOM LABEL SYSTEM
    ===================================================== */
 
 let lastLevel = 1;
 
 
 globe.controls().addEventListener(
-    'change',
+    "change",
     () => {
 
         const altitude =
@@ -1374,19 +1385,19 @@ globe.controls().addEventListener(
         let level;
 
 
-        if(altitude > 1.5) {
+        if (altitude > 1.8) {
 
             level = 1;
 
         }
 
-        else if(altitude > 1.0) {
+        else if (altitude > 1.25) {
 
             level = 2;
 
         }
 
-        else if(altitude > .65) {
+        else if (altitude > .8) {
 
             level = 3;
 
@@ -1399,15 +1410,12 @@ globe.controls().addEventListener(
         }
 
 
-        if(level !== lastLevel) {
+        if (level !== lastLevel) {
 
             lastLevel = level;
 
-
             globe.labelsData(
-                locations.filter(
-                    city => city.level <= level
-                )
+                makeLabels(level)
             );
 
         }
@@ -1417,83 +1425,241 @@ globe.controls().addEventListener(
 
 
 /* =====================================================
-   CELL TOWER ON / OFF
+   PARENT SETTINGS
    ===================================================== */
 
-let cellTowersVisible = true;
+const states = [
+
+    "Alabama","Alaska","Arizona","Arkansas",
+    "California","Colorado","Connecticut",
+    "Delaware","Florida","Georgia","Hawaii",
+    "Idaho","Illinois","Indiana","Iowa",
+    "Kansas","Kentucky","Louisiana","Maine",
+    "Maryland","Massachusetts","Michigan",
+    "Minnesota","Mississippi","Missouri",
+    "Montana","Nebraska","Nevada",
+    "New Hampshire","New Jersey","New Mexico",
+    "New York","North Carolina","North Dakota",
+    "Ohio","Oklahoma","Oregon","Pennsylvania",
+    "Rhode Island","South Carolina",
+    "South Dakota","Tennessee","Texas","Utah",
+    "Vermont","Virginia","Washington",
+    "West Virginia","Wisconsin","Wyoming",
+    "District of Columbia"
+
+];
 
 
-const towerButton =
-    document.getElementById(
-        'towerButton'
-    );
+const stateTimeZones = {
+
+    Alabama:"CT",
+    Alaska:"AK",
+    Arizona:"MT",
+    Arkansas:"CT",
+    California:"PT",
+    Colorado:"MT",
+    Connecticut:"ET",
+    Delaware:"ET",
+    Florida:"ET",
+    Georgia:"ET",
+    Hawaii:"HT",
+    Idaho:"MT",
+    Illinois:"CT",
+    Indiana:"ET",
+    Iowa:"CT",
+    Kansas:"CT",
+    Kentucky:"ET",
+    Louisiana:"CT",
+    Maine:"ET",
+    Maryland:"ET",
+    Massachusetts:"ET",
+    Michigan:"ET",
+    Minnesota:"CT",
+    Mississippi:"CT",
+    Missouri:"CT",
+    Montana:"MT",
+    Nebraska:"CT",
+    Nevada:"PT",
+    "New Hampshire":"ET",
+    "New Jersey":"ET",
+    "New Mexico":"MT",
+    "New York":"ET",
+    "North Carolina":"ET",
+    "North Dakota":"CT",
+    Ohio:"ET",
+    Oklahoma:"CT",
+    Oregon:"PT",
+    Pennsylvania:"ET",
+    "Rhode Island":"ET",
+    "South Carolina":"ET",
+    "South Dakota":"CT",
+    Tennessee:"CT",
+    Texas:"CT",
+    Utah:"MT",
+    Vermont:"ET",
+    Virginia:"ET",
+    Washington:"PT",
+    "West Virginia":"ET",
+    Wisconsin:"CT",
+    Wyoming:"MT",
+    "District of Columbia":"ET"
+
+};
 
 
-const cellStatus =
-    document.getElementById(
-        'cellStatus'
-    );
+const zoneArrival = {
+
+    ET:"00:15",
+    CT:"23:15",
+    MT:"22:15",
+    PT:"21:15",
+    AK:"20:15",
+    HT:"19:15"
+
+};
 
 
-towerButton.addEventListener(
-    'click',
+const parentButton =
+    document.getElementById("parentButton");
+
+const parentModal =
+    document.getElementById("parentModal");
+
+const cancelParent =
+    document.getElementById("cancelParent");
+
+const saveParent =
+    document.getElementById("saveParent");
+
+const stateSelect =
+    document.getElementById("stateSelect");
+
+const arrivalTime =
+    document.getElementById("arrivalTime");
+
+const parentEstimate =
+    document.getElementById("parentEstimate");
+
+const homeEta =
+    document.getElementById("homeEta");
+
+
+states.forEach(state => {
+
+    const option =
+        document.createElement("option");
+
+    option.value = state;
+
+    option.textContent = state;
+
+    stateSelect.appendChild(option);
+
+});
+
+
+function formatTime(time) {
+
+    if (!time) return "NOT SET";
+
+    const [hours,minutes] =
+        time.split(":").map(Number);
+
+    const suffix =
+        hours >= 12 ? "PM" : "AM";
+
+    const hour12 =
+        hours % 12 || 12;
+
+    return `${hour12}:${String(minutes).padStart(2,"0")} ${suffix}`;
+
+}
+
+
+function updateParentEstimate() {
+
+    const state =
+        stateSelect.value;
+
+
+    if (!state) {
+
+        parentEstimate.textContent =
+            "SELECT A STATE TO GET A PROJECT ESTIMATE.";
+
+        return;
+
+    }
+
+
+    const zone =
+        stateTimeZones[state];
+
+
+    const estimate =
+        zoneArrival[zone];
+
+
+    arrivalTime.value =
+        estimate;
+
+
+    parentEstimate.textContent =
+        `PROJECT ESTIMATE: SANTA ARRIVES AROUND ${formatTime(estimate)} IN ${state.toUpperCase()}.`;
+
+}
+
+
+stateSelect.addEventListener(
+    "change",
+    updateParentEstimate
+);
+
+
+arrivalTime.addEventListener(
+    "input",
     () => {
 
-        cellTowersVisible =
-            !cellTowersVisible;
+        if (
+            !stateSelect.value ||
+            !arrivalTime.value
+        ) return;
 
 
-        if(cellTowersVisible) {
+        parentEstimate.textContent =
+            `PARENT-SET ARRIVAL: ${formatTime(arrivalTime.value)} IN ${stateSelect.value.toUpperCase()}.`;
 
-            /* TURN ON */
-
-            globe.customLayerData(
-                cellTowers
-            );
+    }
+);
 
 
-            towerButton.textContent =
-                '📡 CELL TOWERS: ON';
+parentButton.addEventListener(
+    "click",
+    () => {
+
+        parentModal.classList.add("open");
+
+    }
+);
 
 
-            towerButton.classList.remove(
-                'off'
-            );
+cancelParent.addEventListener(
+    "click",
+    () => {
+
+        parentModal.classList.remove("open");
+
+    }
+);
 
 
-            cellStatus.textContent =
-                'CONNECTED';
+parentModal.addEventListener(
+    "click",
+    event => {
 
+        if (event.target === parentModal) {
 
-            cellStatus.classList.remove(
-                'waiting'
-            );
-
-        }
-
-        else {
-
-            /* TURN OFF */
-
-            globe.customLayerData([]);
-
-
-            towerButton.textContent =
-                '📡 CELL TOWERS: OFF';
-
-
-            towerButton.classList.add(
-                'off'
-            );
-
-
-            cellStatus.textContent =
-                'OFFLINE';
-
-
-            cellStatus.classList.add(
-                'waiting'
-            );
+            parentModal.classList.remove("open");
 
         }
 
@@ -1501,26 +1667,118 @@ towerButton.addEventListener(
 );
 
 
+saveParent.addEventListener(
+    "click",
+    () => {
+
+        if (
+            !stateSelect.value ||
+            !arrivalTime.value
+        ) {
+
+            parentEstimate.textContent =
+                "SELECT A STATE AND ARRIVAL TIME FIRST.";
+
+            return;
+
+        }
+
+
+        homeEta.textContent =
+            formatTime(arrivalTime.value);
+
+
+        localStorage.setItem(
+            "santaParentSettings",
+            JSON.stringify({
+
+                state: stateSelect.value,
+
+                arrivalTime: arrivalTime.value
+
+            })
+        );
+
+
+        parentModal.classList.remove("open");
+
+    }
+);
+
+
+/* LOAD SAVED PARENT SETTINGS */
+
+const saved =
+    JSON.parse(
+        localStorage.getItem(
+            "santaParentSettings"
+        ) || "null"
+    );
+
+
+if (
+    saved &&
+    saved.state &&
+    saved.arrivalTime
+) {
+
+    stateSelect.value =
+        saved.state;
+
+    arrivalTime.value =
+        saved.arrivalTime;
+
+    homeEta.textContent =
+        formatTime(saved.arrivalTime);
+
+}
+
+
 /* =====================================================
-   NORTH POLE START VIEW
+   DEMO LOCATION DISPLAY
    ===================================================== */
 
-setTimeout(() => {
+const displayLocations =
+    locations.filter(
+        city => city.level <= 2
+    );
 
-    globe.pointOfView({
 
-        lat: 20,
+let locationIndex = 0;
 
-        lng: -30,
 
-        altitude: 2.2
+setInterval(() => {
 
-    });
+    if (!displayLocations.length) return;
 
-}, 500);
+
+    const city =
+        displayLocations[
+            locationIndex
+        ];
+
+
+    document.getElementById(
+        "location"
+    ).textContent =
+        city.name.toUpperCase();
+
+
+    locationIndex++;
+
+
+    if (
+        locationIndex >=
+        displayLocations.length
+    ) {
+
+        locationIndex = 0;
+
+    }
+
+},5000);
 
 </script>
 
 </body>
 </html>
-```
