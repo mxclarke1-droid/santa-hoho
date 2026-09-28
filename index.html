@@ -1,370 +1,539 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Santa Tracker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://unpkg.com/globe.gl"></script>
+<title>My Santa Tracker</title>
 
-    <style>
+<script src="https://unpkg.com/globe.gl"></script>
 
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: black;
-            font-family: Arial, sans-serif;
-        }
+<style>
 
-        #globe {
-            width: 100vw;
-            height: 100vh;
-        }
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-        /* =========================================
-           SANTA TRACKER LOGO
-           ========================================= */
+/* =====================================================
+   GLOBE
+   ===================================================== */
 
-        #logo {
-            position: absolute;
-            top: 18px;
-            left: 25px;
+#globe {
+    width: 100vw;
+    height: 100vh;
+}
 
-            width: 290px;
 
-            z-index: 20;
+/* =====================================================
+   SANTA TRACKER LOGO
+   ===================================================== */
 
-            color: white;
-            text-align: left;
-        }
+#logo {
+    position: absolute;
+    top: 22px;
+    right: 25px;
 
-        #logoSanta {
-            font-size: 32px;
-            margin-right: 8px;
-        }
+    z-index: 20;
 
-        #logoName {
-            display: inline-block;
-            vertical-align: middle;
-        }
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-        #logoTitle {
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 3px;
+    color: white;
 
-            text-shadow:
-                0 0 5px rgba(255,255,255,0.3);
-        }
+    font-weight: bold;
+    letter-spacing: 2px;
 
-        #logoSubtitle {
-            margin-top: 3px;
+    text-shadow:
+        0 2px 5px #000,
+        0 0 10px rgba(255,255,255,.25);
+}
 
-            font-size: 9px;
-            letter-spacing: 2px;
+#santaFace {
+    width: 48px;
+    height: 48px;
 
-            color: #aeb7bb;
-        }
+    position: relative;
 
-        #logoLine {
-            width: 100%;
-            height: 2px;
+    background: #e6a06a;
 
-            margin-top: 10px;
+    border-radius: 50%;
 
-            background: #596267;
-        }
+    border: 2px solid white;
 
+    box-shadow:
+        0 0 10px rgba(255,255,255,.3),
+        0 3px 8px rgba(0,0,0,.6);
+}
 
-        /* =========================================
-           TRACKING CONSOLE
-           ========================================= */
+/* Santa hat */
 
-        #trackingPanel {
+#santaHat {
+    position: absolute;
 
-            position: absolute;
+    width: 44px;
+    height: 24px;
 
-            top: 112px;
-            left: 25px;
+    left: 1px;
+    top: -15px;
 
-            width: 290px;
+    background: #c91e2b;
 
-            background: rgba(8, 12, 14, 0.90);
+    border-radius: 40px 40px 4px 4px;
 
-            border: 2px solid #687277;
+    transform: rotate(-5deg);
 
-            border-radius: 4px;
+    border-bottom: 6px solid white;
+}
 
-            color: white;
+#hatBall {
+    position: absolute;
 
-            padding: 18px;
+    width: 9px;
+    height: 9px;
 
-            box-sizing: border-box;
+    background: white;
 
-            z-index: 10;
+    border-radius: 50%;
 
-            box-shadow:
-                0 0 12px rgba(0,0,0,0.8),
-                inset 0 0 20px rgba(255,255,255,0.03);
-        }
+    right: -3px;
+    top: -4px;
+}
 
+/* Santa beard */
 
-        #panelHeader {
+#beard {
+    position: absolute;
 
-            border-bottom: 1px solid #596267;
+    left: 7px;
+    bottom: -1px;
 
-            padding-bottom: 12px;
+    width: 30px;
+    height: 21px;
 
-            margin-bottom: 14px;
-        }
+    background: white;
 
+    border-radius: 8px 8px 18px 18px;
+}
 
-        #panelHeader h2 {
+/* Eyes */
 
-            margin: 0;
+.eye {
+    position: absolute;
 
-            font-size: 20px;
+    width: 5px;
+    height: 5px;
 
-            letter-spacing: 2px;
-        }
+    background: #111;
 
+    border-radius: 50%;
 
-        #status {
+    top: 20px;
+}
 
-            margin-top: 8px;
+.eye.left {
+    left: 13px;
+}
 
-            font-size: 12px;
+.eye.right {
+    right: 13px;
+}
 
-            letter-spacing: 1px;
-        }
+#logoText {
+    font-size: 19px;
+}
 
 
-        #statusDot {
+/* =====================================================
+   TRACKING CONSOLE
+   ===================================================== */
 
-            display: inline-block;
+#trackingPanel {
 
-            width: 9px;
-            height: 9px;
+    position: absolute;
 
-            background: #45d66b;
+    top: 25px;
+    left: 25px;
 
-            border-radius: 50%;
+    width: 310px;
 
-            margin-right: 7px;
+    background: rgba(8,12,14,.92);
 
-            box-shadow:
-                0 0 8px #45d66b;
-        }
+    border: 2px solid #687277;
 
+    border-radius: 5px;
 
-        /* =========================================
-           INFORMATION ROWS
-           ========================================= */
+    color: white;
 
-        .infoRow {
+    padding: 18px;
 
-            display: flex;
+    z-index: 10;
 
-            justify-content: space-between;
+    box-shadow:
+        0 0 15px rgba(0,0,0,.85),
+        inset 0 0 20px rgba(255,255,255,.03);
 
-            border-bottom:
-                1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(5px);
+}
 
-            padding: 10px 0;
 
-            font-size: 13px;
-        }
+/* Header */
 
+#panelHeader {
 
-        .infoName {
+    border-bottom: 1px solid #596267;
 
-            color: #aeb7bb;
-        }
+    padding-bottom: 12px;
 
+    margin-bottom: 14px;
+}
 
-        .infoValue {
+#panelHeader h2 {
 
-            font-weight: bold;
-        }
+    margin: 0;
 
+    font-size: 21px;
 
-        /* =========================================
-           RADIO SIGNAL
-           ========================================= */
+    letter-spacing: 2px;
+}
 
-        #signalBox {
+#status {
 
-            margin-top: 15px;
+    margin-top: 8px;
 
-            padding-top: 12px;
+    font-size: 12px;
 
-            border-top: 1px solid #596267;
-        }
+    letter-spacing: 1px;
+}
 
+#statusDot {
 
-        #signalTitle {
+    display: inline-block;
 
-            font-size: 11px;
+    width: 9px;
+    height: 9px;
 
-            color: #aeb7bb;
+    background: #45d66b;
 
-            margin-bottom: 7px;
+    border-radius: 50%;
 
-            letter-spacing: 1px;
-        }
+    margin-right: 7px;
 
+    box-shadow: 0 0 8px #45d66b;
+}
 
-        #signalBars {
 
-            display: flex;
+/* =====================================================
+   INFORMATION ROWS
+   ===================================================== */
 
-            gap: 3px;
+.infoRow {
 
-            height: 16px;
-        }
+    display: flex;
 
+    justify-content: space-between;
 
-        .signalBar {
+    border-bottom: 1px solid rgba(255,255,255,.12);
 
-            flex: 1;
+    padding: 10px 0;
 
-            background: #45d66b;
+    font-size: 13px;
 
-            box-shadow:
-                0 0 5px rgba(69,214,107,0.4);
-        }
+    gap: 10px;
+}
 
+.infoName {
 
-        #signalText {
+    color: #aeb7bb;
+}
 
-            margin-top: 6px;
+.infoValue {
 
-            font-size: 11px;
+    font-weight: bold;
 
-            color: #45d66b;
-        }
+    text-align: right;
+}
 
 
-        /* =========================================
-           CONNECTION SYSTEM
-           ========================================= */
+/* =====================================================
+   RADIO SIGNAL
+   ===================================================== */
 
-        #connections {
+#signalBox {
 
-            margin-top: 14px;
+    margin-top: 15px;
 
-            border-top:
-                1px solid #596267;
+    padding-top: 12px;
 
-            padding-top: 10px;
-        }
+    border-top: 1px solid #596267;
+}
 
+#signalTitle {
 
-        .connection {
+    font-size: 11px;
 
-            display: grid;
+    color: #aeb7bb;
 
-            grid-template-columns:
-                25px 1fr auto;
+    margin-bottom: 7px;
 
-            align-items: center;
+    letter-spacing: 1px;
+}
 
-            font-size: 10px;
+#signalBars {
 
-            letter-spacing: 0.5px;
+    display: flex;
 
-            padding: 7px 0;
-        }
+    gap: 3px;
 
+    height: 16px;
+}
 
-        .connectionIcon {
+.signalBar {
 
-            font-size: 15px;
-        }
+    flex: 1;
 
+    background: #45d66b;
 
-        .connectionStatus {
+    box-shadow: 0 0 5px rgba(69,214,107,.4);
+}
 
-            color: #45d66b;
+#signalText {
 
-            font-size: 8px;
-        }
+    margin-top: 6px;
 
+    font-size: 11px;
 
-        .connectionStatus.waiting {
+    color: #45d66b;
+}
 
-            color: #d5a84c;
-        }
 
+/* =====================================================
+   CONNECTIONS
+   ===================================================== */
 
-        .connectionLine {
+#connections {
 
-            height: 12px;
+    margin-top: 14px;
 
-            width: 1px;
+    border-top: 1px solid #596267;
 
-            margin-left: 12px;
+    padding-top: 10px;
+}
 
-            background: #596267;
-        }
+.connection {
 
+    display: grid;
 
-        #bottomText {
+    grid-template-columns: 25px 1fr auto;
 
-            margin-top: 15px;
+    align-items: center;
 
-            font-size: 10px;
+    font-size: 10px;
 
-            color: #858e92;
+    letter-spacing: .5px;
 
-            line-height: 1.5;
-        }
+    padding: 7px 0;
+}
 
-    </style>
+.connectionIcon {
 
+    font-size: 15px;
+}
+
+.connectionStatus {
+
+    color: #45d66b;
+
+    font-size: 8px;
+}
+
+.connectionStatus.waiting {
+
+    color: #d5a84c;
+}
+
+.connectionLine {
+
+    height: 12px;
+
+    width: 1px;
+
+    margin-left: 12px;
+
+    background: #596267;
+}
+
+
+/* =====================================================
+   CELL TOWER CONTROL
+   ===================================================== */
+
+#towerControl {
+
+    margin-top: 15px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid #596267;
+}
+
+#towerTitle {
+
+    font-size: 10px;
+
+    color: #aeb7bb;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 8px;
+}
+
+#towerButton {
+
+    width: 100%;
+
+    padding: 9px 10px;
+
+    border: 1px solid #45d66b;
+
+    background: rgba(69,214,107,.12);
+
+    color: #45d66b;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    border-radius: 3px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+#towerButton:hover {
+
+    background: rgba(69,214,107,.25);
+}
+
+#towerButton.off {
+
+    border-color: #777;
+
+    background: rgba(100,100,100,.15);
+
+    color: #aaa;
+}
+
+
+/* =====================================================
+   BOTTOM TEXT
+   ===================================================== */
+
+#bottomText {
+
+    margin-top: 15px;
+
+    font-size: 10px;
+
+    color: #858e92;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   NORTH POLE LABEL
+   ===================================================== */
+
+.northPoleNotice {
+
+    color: #8fdcff !important;
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media(max-width:700px) {
+
+    #trackingPanel {
+
+        width: 280px;
+
+        left: 10px;
+
+        top: 10px;
+
+        padding: 14px;
+    }
+
+    #logo {
+
+        top: 12px;
+
+        right: 12px;
+    }
+
+    #logoText {
+
+        font-size: 14px;
+    }
+
+}
+
+</style>
 </head>
 
 
 <body>
 
 
-<!-- =========================================
+<!-- =====================================================
      SANTA TRACKER LOGO
-     ========================================= -->
+     ===================================================== -->
 
 <div id="logo">
 
-    <span id="logoSanta">🎅</span>
+    <div id="santaFace">
 
-    <span id="logoName">
-
-        <div id="logoTitle">
-            SANTA TRACKER
+        <div id="santaHat">
+            <div id="hatBall"></div>
         </div>
 
-        <div id="logoSubtitle">
-            NORTH POLE TRACKING NETWORK
-        </div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
 
-    </span>
+        <div id="beard"></div>
 
-    <div id="logoLine"></div>
+    </div>
+
+    <div id="logoText">
+        SANTA TRACKER
+    </div>
 
 </div>
 
 
-
-<!-- =========================================
+<!-- =====================================================
      TRACKING CONSOLE
-     ========================================= -->
+     ===================================================== -->
 
 <div id="trackingPanel">
 
-
     <div id="panelHeader">
 
-        <h2>
-            TRACKING CONSOLE
-        </h2>
+        <h2>TRACKING CONSOLE</h2>
 
         <div id="status">
 
@@ -377,7 +546,6 @@
     </div>
 
 
-
     <div class="infoRow">
 
         <span class="infoName">
@@ -385,11 +553,10 @@
         </span>
 
         <span class="infoValue" id="location">
-            NORTH AMERICA
+            NORTH POLE
         </span>
 
     </div>
-
 
 
     <div class="infoRow">
@@ -405,7 +572,6 @@
     </div>
 
 
-
     <div class="infoRow">
 
         <span class="infoName">
@@ -417,7 +583,6 @@
         </span>
 
     </div>
-
 
 
     <div class="infoRow">
@@ -433,11 +598,11 @@
     </div>
 
 
-
-    <!-- RADIO SIGNAL -->
+    <!-- =================================================
+         RADIO SIGNAL
+         ================================================= -->
 
     <div id="signalBox">
-
 
         <div id="signalTitle">
             RADIO TRACKING SIGNAL
@@ -465,8 +630,9 @@
         </div>
 
 
-
-        <!-- CONNECTIONS -->
+        <!-- =================================================
+             CONNECTIONS
+             ================================================= -->
 
         <div id="connections">
 
@@ -481,16 +647,17 @@
                     CELL TOWERS
                 </span>
 
-                <span class="connectionStatus">
+                <span
+                    id="cellStatus"
+                    class="connectionStatus"
+                >
                     CONNECTED
                 </span>
 
             </div>
 
 
-
             <div class="connectionLine"></div>
-
 
 
             <div class="connection">
@@ -510,9 +677,7 @@
             </div>
 
 
-
             <div class="connectionLine"></div>
-
 
 
             <div class="connection">
@@ -531,11 +696,26 @@
 
             </div>
 
-
         </div>
 
     </div>
 
+
+    <!-- =================================================
+         CELL TOWER ON/OFF
+         ================================================= -->
+
+    <div id="towerControl">
+
+        <div id="towerTitle">
+            CELL TOWER DISPLAY
+        </div>
+
+        <button id="towerButton">
+            📡 CELL TOWERS: ON
+        </button>
+
+    </div>
 
 
     <div id="bottomText">
@@ -544,27 +724,34 @@
 
     </div>
 
-
 </div>
 
 
-
-<!-- =========================================
-     3D EARTH
-     ========================================= -->
+<!-- =====================================================
+     GLOBE
+     ===================================================== -->
 
 <div id="globe"></div>
-
 
 
 <script>
 
 
-/* =========================================
-   CITY LOCATIONS
-   ========================================= */
+/* =====================================================
+   CITY DATABASE
+   ===================================================== */
 
 const locations = [
+
+    /* NORTH POLE */
+
+    {
+        name: "NORTH POLE",
+        lat: 90,
+        lng: 0,
+        level: 1
+    },
+
 
     /* UNITED STATES */
 
@@ -650,6 +837,7 @@ const locations = [
     {name:"Saskatoon",lat:52.1332,lng:-106.67,level:3},
     {name:"Regina",lat:50.4452,lng:-104.6189,level:3},
     {name:"Kelowna",lat:49.888,lng:-119.496,level:4},
+    {name:"London Ontario",lat:42.9849,lng:-81.2453,level:4},
     {name:"Hamilton",lat:43.2557,lng:-79.8711,level:4},
     {name:"St Johns",lat:47.5615,lng:-52.7126,level:4},
 
@@ -664,19 +852,10 @@ const locations = [
     {name:"Puebla",lat:19.0414,lng:-98.2063,level:2},
     {name:"Merida",lat:20.9674,lng:-89.5926,level:3},
     {name:"Oaxaca",lat:17.0732,lng:-96.7266,level:3},
-    {name:"Acapulco",lat:16.8531,lng:-99.8238,level:4},
+    {name:"Acapulco",lat:16.8531,lng:-99.8237,level:4},
     {name:"Mazatlan",lat:23.2494,lng:-106.4111,level:4},
-
-
-    /* CENTRAL AMERICA */
-
-    {name:"Guatemala City",lat:14.6349,lng:-90.5069,level:1},
-    {name:"Belize City",lat:17.5046,lng:-88.1962,level:2},
-    {name:"San Salvador",lat:13.6929,lng:-89.2182,level:1},
-    {name:"Tegucigalpa",lat:14.0723,lng:-87.1921,level:1},
-    {name:"Managua",lat:12.1149,lng:-86.2362,level:1},
-    {name:"San Jose Costa Rica",lat:9.9281,lng:-84.0907,level:1},
-    {name:"Panama City",lat:8.9824,lng:-79.5199,level:1},
+    {name:"Chihuahua",lat:28.632,lng:-106.0691,level:4},
+    {name:"Veracruz",lat:19.1738,lng:-96.1342,level:4},
 
 
     /* SOUTH AMERICA */
@@ -869,9 +1048,9 @@ const locations = [
 ];
 
 
-/* =========================================
+/* =====================================================
    CELL TOWERS
-   ========================================= */
+   ===================================================== */
 
 const cellTowers = [
 
@@ -931,173 +1110,229 @@ const cellTowers = [
 ];
 
 
-/* =========================================
+/* =====================================================
    CREATE GLOBE
-   ========================================= */
+   ===================================================== */
 
 const globe = Globe()
-
-    (document.getElementById('globe'))
-
-    .globeImageUrl(
-        'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
-    )
-
-    .bumpImageUrl(
-        'https://unpkg.com/three-globe/example/img/earth-topology.png'
-    )
-
-    .backgroundImageUrl(
-        'https://unpkg.com/three-globe/example/img/night-sky.png'
-    )
-
-    .showAtmosphere(true)
-
-    .atmosphereColor('#4da6ff')
-
-    .atmosphereAltitude(0.18)
+(
+    document.getElementById('globe')
+)
 
 
-    /* CITY LABELS */
-
-    .labelsData(
-        locations.filter(
-            city => city.level === 1
-        )
-    )
-
-    .labelLat(
-        city => city.lat
-    )
-
-    .labelLng(
-        city => city.lng
-    )
-
-    .labelText(
-        city => city.name
-    )
-
-    .labelSize(0.42)
-
-    .labelColor(
-        () => "#ffffff"
-    )
-
-    .labelDotRadius(0.11)
-
-    .labelAltitude(0.015);
+.globeImageUrl(
+    'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg'
+)
 
 
-/* =========================================
-   CELL TOWERS
-   ========================================= */
+.bumpImageUrl(
+    'https://unpkg.com/three-globe/example/img/earth-topology.png'
+)
+
+
+.backgroundImageUrl(
+    'https://unpkg.com/three-globe/example/img/night-sky.png'
+)
+
+
+.showAtmosphere(true)
+
+
+.atmosphereColor('#4da6ff')
+
+
+.atmosphereAltitude(.18)
+
+
+/* =====================================================
+   CITY LABELS
+   ===================================================== */
+
+.labelsData(
+    locations.filter(city => city.level === 1)
+)
+
+
+.labelLat(city => city.lat)
+
+
+.labelLng(city => city.lng)
+
+
+.labelText(city => city.name)
+
+
+.labelSize(city => {
+
+    if(city.name === "NORTH POLE") {
+        return .65;
+    }
+
+    return .42;
+
+})
+
+
+.labelColor(city => {
+
+    if(city.name === "NORTH POLE") {
+        return "#8fdcff";
+    }
+
+    return "#ffffff";
+
+})
+
+
+.labelDotRadius(city => {
+
+    if(city.name === "NORTH POLE") {
+        return .16;
+    }
+
+    return .11;
+
+})
+
+
+.labelAltitude(.015);
+
+
+/* =====================================================
+   CELL TOWER OBJECTS
+   ===================================================== */
 
 globe
 
-    .customLayerData(
-        cellTowers
-    )
+.customLayerData(cellTowers)
 
-    .customThreeObject(() => {
+.customThreeObject(() => {
 
-        const group =
-            new THREE.Group();
+    const group = new THREE.Group();
 
 
-        /* Tower pole */
+    /* Tower pole */
 
-        const poleGeometry =
-            new THREE.CylinderGeometry(
-                0.012,
-                0.018,
-                0.20,
-                6
-            );
-
-
-        const poleMaterial =
-            new THREE.MeshBasicMaterial({
-                color: 0xaaaaaa
-            });
+    const poleGeometry =
+        new THREE.CylinderGeometry(
+            .012,
+            .018,
+            .20,
+            6
+        );
 
 
-        const pole =
-            new THREE.Mesh(
-                poleGeometry,
-                poleMaterial
-            );
+    const poleMaterial =
+        new THREE.MeshBasicMaterial({
+            color: 0xaaaaaa
+        });
 
 
-        pole.position.y = 0.10;
+    const pole =
+        new THREE.Mesh(
+            poleGeometry,
+            poleMaterial
+        );
 
 
-        group.add(pole);
+    pole.position.y = .10;
 
 
-        /* Signal light */
-
-        const lightGeometry =
-            new THREE.SphereGeometry(
-                0.025,
-                6,
-                6
-            );
+    group.add(pole);
 
 
-        const lightMaterial =
-            new THREE.MeshBasicMaterial({
-                color: 0xffaa33
-            });
+    /* Signal light */
+
+    const lightGeometry =
+        new THREE.SphereGeometry(
+            .025,
+            6,
+            6
+        );
 
 
-        const light =
-            new THREE.Mesh(
-                lightGeometry,
-                lightMaterial
-            );
+    const lightMaterial =
+        new THREE.MeshBasicMaterial({
+            color: 0xffaa33
+        });
 
 
-        light.position.y = 0.21;
+    const light =
+        new THREE.Mesh(
+            lightGeometry,
+            lightMaterial
+        );
 
 
-        group.add(light);
+    light.position.y = .21;
 
 
-        return group;
-
-    })
+    group.add(light);
 
 
-    .customThreeObjectUpdate(
-        (object, data) => {
+    /* Signal rings */
 
-            Object.assign(
-
-                object.position,
-
-                globe.getCoords(
-                    data.lat,
-                    data.lng,
-                    0.02
-                )
-
-            );
+    const ringGeometry =
+        new THREE.TorusGeometry(
+            .045,
+            .006,
+            6,
+            16
+        );
 
 
-            object.lookAt(
-                0,
-                0,
-                0
-            );
-
-        }
-    );
+    const ringMaterial =
+        new THREE.MeshBasicMaterial({
+            color: 0x45d66b
+        });
 
 
-/* =========================================
+    const ring =
+        new THREE.Mesh(
+            ringGeometry,
+            ringMaterial
+        );
+
+
+    ring.rotation.x =
+        Math.PI / 2;
+
+
+    ring.position.y =
+        .21;
+
+
+    group.add(ring);
+
+
+    return group;
+
+})
+
+
+.customThreeObjectUpdate(
+    (object, data) => {
+
+        Object.assign(
+            object.position,
+
+            globe.getCoords(
+                data.lat,
+                data.lng,
+                .02
+            )
+        );
+
+
+        object.lookAt(0,0,0);
+
+    }
+);
+
+
+/* =====================================================
    CAMERA
-   ========================================= */
+   ===================================================== */
 
 globe.pointOfView({
 
@@ -1110,9 +1345,9 @@ globe.pointOfView({
 });
 
 
-/* =========================================
+/* =====================================================
    CONTROLS
-   ========================================= */
+   ===================================================== */
 
 globe.controls().enableRotate = true;
 
@@ -1121,9 +1356,9 @@ globe.controls().enableZoom = true;
 globe.controls().enablePan = false;
 
 
-/* =========================================
-   ZOOM-BASED CITY LABELS
-   ========================================= */
+/* =====================================================
+   CITY ZOOM LEVELS
+   ===================================================== */
 
 let lastLevel = 1;
 
@@ -1139,19 +1374,19 @@ globe.controls().addEventListener(
         let level;
 
 
-        if (altitude > 1.5) {
+        if(altitude > 1.5) {
 
             level = 1;
 
         }
 
-        else if (altitude > 1.0) {
+        else if(altitude > 1.0) {
 
             level = 2;
 
         }
 
-        else if (altitude > 0.65) {
+        else if(altitude > .65) {
 
             level = 3;
 
@@ -1164,18 +1399,15 @@ globe.controls().addEventListener(
         }
 
 
-        if (level !== lastLevel) {
+        if(level !== lastLevel) {
 
             lastLevel = level;
 
 
             globe.labelsData(
-
                 locations.filter(
-                    city =>
-                        city.level <= level
+                    city => city.level <= level
                 )
-
             );
 
         }
@@ -1183,7 +1415,112 @@ globe.controls().addEventListener(
     }
 );
 
+
+/* =====================================================
+   CELL TOWER ON / OFF
+   ===================================================== */
+
+let cellTowersVisible = true;
+
+
+const towerButton =
+    document.getElementById(
+        'towerButton'
+    );
+
+
+const cellStatus =
+    document.getElementById(
+        'cellStatus'
+    );
+
+
+towerButton.addEventListener(
+    'click',
+    () => {
+
+        cellTowersVisible =
+            !cellTowersVisible;
+
+
+        if(cellTowersVisible) {
+
+            /* TURN ON */
+
+            globe.customLayerData(
+                cellTowers
+            );
+
+
+            towerButton.textContent =
+                '📡 CELL TOWERS: ON';
+
+
+            towerButton.classList.remove(
+                'off'
+            );
+
+
+            cellStatus.textContent =
+                'CONNECTED';
+
+
+            cellStatus.classList.remove(
+                'waiting'
+            );
+
+        }
+
+        else {
+
+            /* TURN OFF */
+
+            globe.customLayerData([]);
+
+
+            towerButton.textContent =
+                '📡 CELL TOWERS: OFF';
+
+
+            towerButton.classList.add(
+                'off'
+            );
+
+
+            cellStatus.textContent =
+                'OFFLINE';
+
+
+            cellStatus.classList.add(
+                'waiting'
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   NORTH POLE START VIEW
+   ===================================================== */
+
+setTimeout(() => {
+
+    globe.pointOfView({
+
+        lat: 20,
+
+        lng: -30,
+
+        altitude: 2.2
+
+    });
+
+}, 500);
+
 </script>
 
 </body>
 </html>
+```
